@@ -1,0 +1,8 @@
+listen: ":443"
+rules:
+  - match: "tls"
+    forward: "npm:443"
+  - match: "ssh"
+    forward: "ssh_server:22"
+  - match: "vless"
+    forward: "xray:443"

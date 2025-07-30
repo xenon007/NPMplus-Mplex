@@ -1,0 +1,68 @@
+{
+  "services": [
+    {
+      "id": "tls",
+      "name": "TLS/HTTPS",
+      "description": "Перенаправление TLS/HTTPS трафика",
+      "match": "tls",
+      "defaultForward": "npm:443",
+      "icon": "fe-lock"
+    },
+    {
+      "id": "ssh",
+      "name": "SSH",
+      "description": "Перенаправление SSH трафика",
+      "match": "ssh",
+      "defaultForward": "ssh_server:22",
+      "icon": "fe-terminal"
+    },
+    {
+      "id": "vless",
+      "name": "VLESS",
+      "description": "Перенаправление VLESS VPN трафика",
+      "match": "vless",
+      "defaultForward": "xray:443",
+      "icon": "fe-shield"
+    },
+    {
+      "id": "vmess",
+      "name": "VMess",
+      "description": "Перенаправление VMess VPN трафика",
+      "match": "vmess",
+      "defaultForward": "xray:443",
+      "icon": "fe-shield"
+    },
+    {
+      "id": "trojan",
+      "name": "Trojan",
+      "description": "Перенаправление Trojan VPN трафика",
+      "match": "trojan",
+      "defaultForward": "trojan:443",
+      "icon": "fe-shield"
+    },
+    {
+      "id": "http",
+      "name": "HTTP Proxy",
+      "description": "Перенаправление HTTP прокси трафика",
+      "match": "http",
+      "defaultForward": "http_proxy:3128",
+      "icon": "fe-globe"
+    },
+    {
+      "id": "socks",
+      "name": "SOCKS Proxy",
+      "description": "Перенаправление SOCKS прокси трафика",
+      "match": "socks",
+      "defaultForward": "socks_proxy:1080",
+      "icon": "fe-globe"
+    },
+    {
+      "id": "snell",
+      "name": "Snell",
+      "description": "Перенаправление Snell прокси трафика",
+      "match": "snell",
+      "defaultForward": "snell:8388",
+      "icon": "fe-globe"
+    }
+  ]
+}
