@@ -82,7 +82,9 @@ jobs:
           tags: docker.io/einherji/npmplus:${{ steps.pr.outputs.pr }}
       - name: show version (PR)
         if: ${{ github.event_name == 'pull_request' }}
-        run: docker run --rm --entrypoint nginx ghcr.io/einherji/npmplus:${{ steps.pr.outputs.pr }} -V
+
+        run: docker run --rm --entrypoint nginx docker.io/einherji/npmplus:${{ steps.pr.outputs.pr }} -V
+
       - name: add comment (PR)
         uses: mshick/add-pr-comment@v2
         if: ${{ github.event_name == 'pull_request' }}
