@@ -246,21 +246,21 @@ services:
 
 #  shoes:
 #    container_name: shoes
-#    image: docker.io/einherji/shoes:0.1.3
+#    image: docker.io/einherji/shoes:0.1.7
 #    restart: always
 #    volumes:
 #      - "/opt/npmplus/services/shoes.conf:/etc/shoes.conf"
 
 #  protoplex:
 #    container_name: protoplex
-#    image: ghcr.io/sapphiccode/protoplex:latest
+#    image: einherji/protoplex:latest
 #    restart: always
 #    volumes:
 #      - "/opt/npmplus/services/protoplex.toml:/etc/protoplex.toml"
 
 #  sslh:
 #    container_name: sslh
-#    image: docker.io/yrutschle/sslh:latest
+#    image: einherji/sslh:latest
 #    restart: always
 #    volumes:
 #      - "/opt/npmplus/services/sslh.cfg:/etc/sslh.cfg"
