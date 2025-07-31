@@ -1,7 +1,0 @@
-FROM einherji/shoes:0.1.3
-# Copying precompilled app and config
-COPY multiplexor/bin/shoes /app/shoes
-COPY multiplexor/config/config.yaml /config/config.yaml
-RUN chmod +x /app/shoes
-
-ENTRYPOINT ["/app/shoes", "-config", "/config/config.yaml"]

@@ -134,7 +134,7 @@
     "logged-in": "Вы вошли как {name}",
     "sign-in-as": "Войти снова как {name}",
     "unknown-user": "Неизвестный пользователь",
-    "version": "0.0.0",
+    "version": "2.12.3",
     "welcome": "Добро пожаловать в NPMplus! Перевод Xenon007"
   },
   "menu": {

@@ -12,10 +12,10 @@ WORKDIR /app/frontend
 COPY darkmode.css /app/dist/css/darkmode.css
 COPY security.txt /app/dist/.well-known/security.txt
 
+
 FROM --platform="$BUILDPLATFORM" alpine:3.22.0 AS build-backend
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
-ARG NODE_ENV=production \
-    TARGETARCH
+ARG NODE_ENV=production TARGETARCH
 COPY backend                         /app
 COPY global/certbot-dns-plugins.json /app/certbot-dns-plugins.json
 WORKDIR /app
@@ -26,7 +26,8 @@ RUN apk upgrade --no-cache -a && \
     elif [ "$TARGETARCH" = "arm64" ]; then npm_config_arch=arm64 npm_config_target_arch=arm64 yarn install; rm -vr /app/node_modules/bcrypt/prebuilds/darwin-* /app/node_modules/bcrypt/prebuilds/win32-* /app/node_modules/bcrypt/prebuilds/linux-arm /app/node_modules/bcrypt/prebuilds/linux-x64 /app/node_modules/bcrypt/prebuilds/linux-arm64/bcrypt.glibc.node; \
     else yarn install; fi && \
     yarn cache clean && \
-    clean-modules --yes \
+    clean-modules --yes
+
 
 FROM alpine:3.22.0 AS strip-backend
 COPY --from=build-backend /app /app
