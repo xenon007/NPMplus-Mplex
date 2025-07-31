@@ -16,6 +16,7 @@ let streams = [
         {
                 id:         1,
                 name:       'Demo Stream',
+                alias:      'demo-stream',
                 url:        'http://example.com/stream',
                 format:     'mp3',
                 bitrate:    128,
@@ -48,6 +49,7 @@ router
                 const stream = {
                         id:         nextId,
                         name:       body.name || `Stream ${nextId}`,
+                        alias:      body.alias || `stream${nextId}`,
                         url:        body.url || '',
                         format:     body.format || '',
                         bitrate:    typeof body.bitrate === 'number' ? body.bitrate : 0,
@@ -72,6 +74,7 @@ router.post('/import', express.json(), (req, res) => {
                 const stream = {
                         id:         streams.length + idx + 1,
                         name:       item.name || `Stream ${streams.length + idx + 1}`,
+                        alias:      item.alias || `stream${streams.length + idx + 1}`,
                         url:        item.url || '',
                         format:     item.format || '',
                         bitrate:    item.bitrate || 0,
@@ -121,5 +124,17 @@ router
                 logger.info('Удален поток: %s', removed.name);
                 res.sendStatus(204);
         });
+
+// Маршрут для воспроизведения потока по алиасу
+router.get('/:id/play', (req, res) => {
+        const id     = Number(req.params.id);
+        const stream = findStream(id);
+        if (!stream) {
+                return res.sendStatus(404);
+        }
+        // Простейшая реализация проксирования через редирект
+        logger.info('Запрос потока по алиасу: %s', stream.alias);
+        res.redirect(stream.url);
+});
 
 module.exports = router;

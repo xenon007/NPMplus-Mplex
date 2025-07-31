@@ -258,7 +258,10 @@
     "add": "Add Stream",
     "import": "Import Playlist",
     "delete": "Delete",
-    "delete-confirm": "Delete this stream?"
+    "delete-confirm": "Delete this stream?",
+    "play": "Play",
+    "save-m3u": "Save M3U",
+    "save-pls": "Save PLS"
   },
   "tls": {
     "certbot": "Certbot",
