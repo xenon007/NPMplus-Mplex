@@ -27,6 +27,7 @@ app.use(require('./lib/express/jwt')());
 app.use('/', require('./routes/main'));
 
 app.use('/multiplexor', require('./routes/multiplexor'));
+app.use('/mikrotik', require('./routes/mikrotik'));
 
 // production error handler
 // no stacktraces leaked to user

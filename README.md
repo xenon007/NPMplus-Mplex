@@ -74,6 +74,21 @@ so that the barrier for entry here is low.
 - fixed smaller issues/bugs
 - other small changes/improvements
 
+- Mikrotik integration for managing interfaces, containers and firewall
+
+## Mikrotik integration
+
+Environment variables used to connect to the router:
+
+- `MIKROTIK_HOST` – router address
+- `MIKROTIK_PORT` – API port (default 8728)
+- `MIKROTIK_USER` – username
+- `MIKROTIK_PASS` – password
+- `MIKROTIK_SSL` – set to `true` to use API-SSL
+- `MIKROTIK_SSH_PORT` – SSH port (default 22)
+
+Passwords, certificates and keys provided in the settings page are stored in `/data/mikrotik`.
+
 ## migration
 - **NOTE: migrating back to the original is not possible**, so make first a **backup** before migration, so you can use the backup to switch back
 - please delete all certs using dnspod as dns provider and recreate them after migration, since the certbot plugin used was replaced
