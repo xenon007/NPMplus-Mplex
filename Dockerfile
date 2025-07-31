@@ -5,10 +5,10 @@ ARG NODE_ENV=production
 COPY frontend /app
 COPY global/certbot-dns-plugins.json /app/certbot-dns-plugins.json
 WORKDIR /app/frontend
-#RUN apk upgrade --no-cache -a && \
-#    apk add --no-cache ca-certificates nodejs yarn openssh git python3 py3-pip build-base
-#RUN yarn install
-#RUN yarn build
+RUN apk upgrade --no-cache -a && \
+    apk add --no-cache ca-certificates nodejs yarn openssh git python3 py3-pip build-base
+RUN yarn install
+RUN yarn build
 COPY darkmode.css /app/dist/css/darkmode.css
 COPY security.txt /app/dist/.well-known/security.txt
 
