@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:labs
+
 FROM --platform="$BUILDPLATFORM" node:20-alpine AS frontend
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 ARG NODE_ENV=production
@@ -29,7 +29,7 @@ RUN apk upgrade --no-cache -a && \
     clean-modules --yes
 
 
-FROM alpine:3.22.0 AS strip-backend
+FROM --platform="$BUILDPLATFORM" alpine:3.22.0 AS strip-backend
 COPY --from=build-backend /app /app
 RUN apk upgrade --no-cache -a && \
     apk add --no-cache ca-certificates binutils file && \
@@ -63,7 +63,7 @@ RUN apk upgrade --no-cache -a && \
     sed -i "s|APPSEC_PROCESS_TIMEOUT=.*|APPSEC_PROCESS_TIMEOUT=10000|g" /src/crowdsec-nginx-bouncer/lua-mod/config_example.conf
 
 
-FROM einherji/nginx-quic:515-python AS Nginx-Quic
+FROM --platform="$BUILDPLATFORM" einherji/nginx-quic:515-python AS Nginx-Quic
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 ENV NODE_ENV=production
 ARG CRS_VER=v4.15.0

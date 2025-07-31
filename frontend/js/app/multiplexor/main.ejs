@@ -91,7 +91,7 @@
             </div>
         </div>
         <div class="card-body collapse" id="raw-yaml-content">
-            <form action="/multiplexor/save" method="post">
+            <form action="/mplex/save" method="post">
                 <div class="form-group">
                     <textarea name="config" id="raw-config" rows="15" class="form-control" placeholder="# YAML будет загружен автоматически"></textarea>
                 </div>
@@ -136,7 +136,7 @@
     </div>
 </div>
 
-<script src="/multiplexor/ui/services.js"></script>
+<script src="/mplex/ui/services.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -330,6 +330,10 @@
                     // Create service cards in a grid
                     window.multiplexorServices.services.forEach(service => {
                         const isActive = activeMatches.includes(service.match);
+                        // Add serviceActive property to the service object to fix "serviceActive is not defined" error
+                        service.active = isActive;
+                        // Define serviceActive in the current scope to ensure it's available
+                        const serviceActive = isActive;
                         const serviceCol = $('<div class="col-md-4 col-lg-3 mb-4"></div>');
 
                         const card = $(`
