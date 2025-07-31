@@ -254,7 +254,9 @@
     "udp-forwarding": "UDP Forwarding"
   },
   "audio-streams": {
-    "title": "Audio Streams"
+    "title": "Audio Streams",
+    "add": "Add Stream",
+    "import": "Import Playlist"
   },
   "tls": {
     "certbot": "Certbot",
