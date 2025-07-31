@@ -329,27 +329,35 @@
 
                     // Create service cards in a grid
                     window.multiplexorServices.services.forEach(service => {
-                        const serviceActive = activeMatches.includes(service.match);
+                        // Determine active state for this service
+                        const isActive = activeMatches.includes(service.match);
                         const serviceCol = $('<div class="col-md-4 col-lg-3 mb-4"></div>');
 
                         const card = $(`
-                            <div class="card ${serviceActive ? 'bg-primary text-white' : ''}" style="cursor: pointer;">
+                            <div class="card ${isActive ? 'bg-primary text-white' : ''}" style="cursor: pointer;">
                                 <div class="card-body p-3">
                                     <div class="d-flex align-items-center">
-                                        <span class="stamp stamp-md mr-3 ${serviceActive ? 'bg-white text-primary' : 'bg-primary'}">
+                                        <span class="stamp stamp-md mr-3 ${isActive ? 'bg-white text-primary' : 'bg-primary'}">
                                             <i class="${service.icon}"></i>
                                         </span>
                                         <div>
                                             <h4 class="m-0">${service.name}</h4>
-                                            <small class="${serviceActive ? 'text-white' : 'text-muted'}">${service.description}</small>
+                                            <small class="${isActive ? 'text-white' : 'text-muted'}">${service.description}</small>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         `);
 
+                        // store state on the element for later access in the handler
+                        card.data('active', isActive);
+                        console.debug('Render card', service.match, 'active:', isActive);
+
                         card.on('click', function() {
-                            toggleService(service, !serviceActive);
+                            const current = $(this).data('active');
+                            console.debug('Toggle card', service.match, '->', !current);
+                            $(this).data('active', !current);
+                            toggleService(service, !current);
                         });
 
                         serviceCol.append(card);
