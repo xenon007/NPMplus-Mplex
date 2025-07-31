@@ -48,13 +48,13 @@ jobs:
           push: true
           tags: |
             zoeyvid/npmplus:latest
-            ghcr.io/zoeyvid/npmplus:latest
+            ghcr.io/xenon007/npmplus:latest
             zoeyvid/npmplus:${{ inputs.tag }}
-            ghcr.io/zoeyvid/npmplus:${{ inputs.tag }}
+            ghcr.io/xenon007/npmplus:${{ inputs.tag }}
             zoeyvid/npmplus:${{ github.run_number }}
-            ghcr.io/zoeyvid/npmplus:${{ github.run_number }}
+            ghcr.io/xenon007/npmplus:${{ github.run_number }}
             zoeyvid/nginx-proxy-manager:latest
-            ghcr.io/zoeyvid/nginx-proxy-manager:latest
+            ghcr.io/xenon007/nginx-proxy-manager:latest
       - name: Show Nginx version
         run: |
-          docker run --rm --init --entrypoint nginx zoeyvid/npmplus:latest -V
+          docker run --rm --init --entrypoint nginx xenon007/npmplus:latest -V
