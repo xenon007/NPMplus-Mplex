@@ -269,7 +269,8 @@
     "category-news": "Новости",
     "category-music": "Музыка",
     "category-talk": "Разговорное",
-    "category-other": "Другое"
+    "category-other": "Другое",
+    "select-domain": "Выберите домен"
   },
   "tls": {
     "certbot": "Certbot",

@@ -269,7 +269,8 @@
     "category-news": "News",
     "category-music": "Music",
     "category-talk": "Talk",
-    "category-other": "Other"
+    "category-other": "Other",
+    "select-domain": "Select Domain"
   },
   "tls": {
     "certbot": "Certbot",
