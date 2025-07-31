@@ -56,6 +56,7 @@ import {
   NetworkUserCardsTeamCrewPage,
   NetworkUserTableTeamCrewPage,
   NetworkVisitorsPage,
+  NetworkMultiplexorPage,
 } from '@/pages/network';
 import {
   CampaignsCardPage,
@@ -290,6 +291,7 @@ export function AppRoutingSetup() {
             path="/network/get-started"
             element={<NetworkGetStartedPage />}
           />
+          <Route path="/network/multiplexor" element={<NetworkMultiplexorPage />} />
           <Route
             path="/network/user-cards/mini-cards"
             element={<NetworkMiniCardsPage />}
