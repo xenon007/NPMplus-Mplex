@@ -8,6 +8,8 @@ const router = express.Router();
 const CONFIG_PATH = process.env.MPLEX_CONFIG_PATH || '/app/multiplexor/config.yaml';
 const SERVICES_PATH = path.join(__dirname, '../../multiplexor/ui/services.json');
 const UI_PATH = path.join(__dirname, '../../multiplexor/ui');
+// Name of the multiplexor process (default: shoes)
+const MPLEX_PROCESS = process.env.MPLEX_PROCESS || 'shoes';
 
 // Serve static files from the UI directory
 router.use('/ui', express.static(UI_PATH));
@@ -28,8 +30,8 @@ function writeConfig(config) {
     try {
         const configContent = yaml.dump(config);
         fs.writeFileSync(CONFIG_PATH, configContent);
-        // Restart shoes process
-        require('child_process').exec('pkill -HUP shoes');
+        // Restart the multiplexor process to apply changes
+        require('child_process').exec(`pkill -HUP ${MPLEX_PROCESS}`);
         return true;
     } catch (error) {
         console.error('Error writing config:', error);
@@ -159,8 +161,8 @@ router.delete('/api/rules/:index', (req, res) => {
 // Save raw YAML config (for backward compatibility)
 router.post('/save', express.text({ type: '*/*' }), (req, res) => {
     fs.writeFileSync(CONFIG_PATH, req.body);
-    // Restart shoes process
-    require('child_process').exec('pkill -HUP shoes');
+    // Restart the multiplexor process to apply changes
+    require('child_process').exec(`pkill -HUP ${MPLEX_PROCESS}`);
     res.redirect('/multiplexor');
 });
 

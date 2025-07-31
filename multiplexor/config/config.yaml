@@ -1,8 +1,9 @@
 listen: ":443"
 rules:
   - match: "tls"
-    forward: "npm:443"
+    # Forward HTTPS traffic to NPMplus (default HTTPS_PORT 8443)
+    forward: "127.0.0.1:8443"
   - match: "ssh"
-    forward: "ssh_server:22"
+    forward: "127.0.0.1:22"
   - match: "vless"
-    forward: "xray:443"
+    forward: "127.0.0.1:10585"

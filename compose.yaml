@@ -101,17 +101,16 @@ services:
 
 # Отдельный контейнер для мультиплексора shoes
   shoes:
-    image: ghcr.io/lekai63/docker-shoes:v0.1.3
+    image: einherji/shoes:0.1.3
     container_name: shoes
     restart: always
-    ports:
-      - "443:443"  # Основной порт для мультиплексора
     volumes:
       - "/opt/npmplus/multiplexor:/config"  # Общий том для конфигурации
     environment:
       - "TZ=your-timezone"  # Установите ваш часовой пояс
     command: ["/app/shoes", "-config", "/config/config.yaml"]
-    network_mode: bridge
+    # Используем host-сеть, чтобы shoes прослушивал порт 443 напрямую
+    network_mode: host
 
 # This can be used to enable crowdsec, see README for a guide
 #  crowdsec:
