@@ -14,11 +14,17 @@ module.exports = Mn.View.extend({
     },
 
     events: {
+        // Обрабатываем клики по пунктам меню
         'click @ui.links': function (e) {
-            let href = $(e.currentTarget).attr('href');
-            if (href !== '#') {
+            const $target = $(e.currentTarget);
+            const href = $target.attr('href');
+            const external = $target.data('external');
+            // Ссылки с data-external открываем обычным способом
+            if (href !== '#' && !external) {
                 e.preventDefault();
                 Controller.navigate(href, true);
+            } else if (external) {
+                console.debug('Opening external link', href);
             }
         }
     },
