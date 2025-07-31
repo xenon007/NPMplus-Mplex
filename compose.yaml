@@ -8,9 +8,8 @@ services:
     ports:
       - 81:81
       - 91:91
-      - 8080:8080
       - 8181:8181
-      - 8282:8282
+      - 8888:8888
       - 8383:8383
       - 8443:8443
 #    ipc: service:openappsec-agent # required when you want to use the openappsec attachment module
@@ -21,6 +20,7 @@ services:
       - "./mplex/config/sslh.cfg:/services/sslh.cfg"
       - "./mplex/config/protoplex.toml:/services/protoplex.toml"
       - "./mplex/config/Caddyfile:/services/Caddyfile"
+
 #      - "/var/www:/var/www" # optional, if you want to use NPMplus directly as webserver for html/php
 #      - "/path/to/old/npm/letsencrypt/folder:/etc/letsencrypt" # Only needed for first time migration from original nginx-proxy-manager to this fork, remove after migration
 #      - "shm-volume:/dev/shm/check-point" # required if you want to use the openappsec attachment module, also enable this volume at the end of this compose.yaml
@@ -50,7 +50,7 @@ services:
       - "NPM_LISTEN_LOCALHOST=false" # Binds the NPM UI only to localhost, overrides NPM_IPV4_BINDING/NPM_IPV6_BINDING, default false
       - "GOA_LISTEN_LOCALHOST=false" # Binds goaccess only to localhost, overrides NPM_IPV4_BINDING/NPM_IPV6_BINDING, default false
 #      - "DEFAULT_CERT_ID=1" # ID of cert, which should be used instead of dummycerts, default 0/unset/dummycerts
-      - "HTTP_PORT=8383" # tcp port to use for http traffic, changing this may breaks certbot http challenge, default 80
+      - "HTTP_PORT=8888" # tcp port to use for http traffic, changing this may breaks certbot http challenge, default 80
       - "HTTPS_PORT=8443" # udp and tcp port to use for https traffic, changing this may breaks certbot http challenge, default 443
 #      - "HTTP3_ALT_SVC_PORT=8443" # please change this if the udp port the clients connect to is not 443, default 443
 #      - "DISABLE_HTTP=true" # disables nginx to listen on port 80, default false
@@ -124,7 +124,7 @@ services:
     environment:
       - "TZ=Europe/Moscow"  # Установите ваш часовой пояс
     #command: ["tail -f > /dev/null"]
-    command: ["shoes config.yaml"]
+    #command: ["shoes config.yaml"]
 
 # This can be used to enable crowdsec, see README for a guide
   crowdsec:
@@ -143,7 +143,7 @@ services:
       - "./opt/crowdsec/data:/var/lib/crowdsec/data"
       - "./opt/npmplus/nginx:/opt/npmplus/nginx:ro"
       - "./opt/openappsec/logs:/opt/openappsec/logs:ro" # only uncomment if you also use the openappsec-agent container
-      - "./opt/npmplus/services/crowdsec.yaml:/etc/crowdsec/config.yaml"
+      #- "./opt/npmplus/services/crowdsec.yaml:/etc/crowdsec/config.yaml"
 
 # This can be used with GOA=true, to keep the geopip database updated, you need to change the envs to make it work
 #  geoipupdate:
