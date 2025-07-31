@@ -2,8 +2,19 @@
     <h1 class="page-title"><%- i18n('audio-streams', 'title') %></h1>
 </div>
 <div class="card">
+    <div class="card-header">
+        <h3 class="card-title"><%- i18n('audio-streams', 'title') %></h3>
+        <div class="card-options">
+            <a href="#" class="btn btn-outline-primary btn-sm mr-2 add-stream">
+                <i class="fe fe-plus"></i> <%- i18n('audio-streams', 'add') %>
+            </a>
+            <a href="#" class="btn btn-outline-secondary btn-sm import-streams">
+                <i class="fe fe-upload"></i> <%- i18n('audio-streams', 'import') %>
+            </a>
+            <input type="file" class="d-none import-file" id="import-playlist" accept=".m3u,.m3u8,.pls">
+        </div>
+    </div>
     <div class="card-body">
-        <p>Функция аудио стримов находится в разработке.</p>
-        <ul id="audio-stream-list"></ul>
+        <ul id="audio-stream-list" class="mb-0"></ul>
     </div>
 </div>
