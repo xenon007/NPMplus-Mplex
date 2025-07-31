@@ -1,5 +1,8 @@
 const $ = require('jquery');
 
+// Храним ссылки на элементы формы правил, чтобы проще собирать данные
+const ruleMap = [];
+
 /**
  * Добавляет строку для правила в форму
  * @param {string} [match=''] шаблон
@@ -11,6 +14,13 @@ function addRuleRow(match = '', forward = '') {
     row.append(`<div class="col"><input type="text" class="form-control rule-forward" placeholder="forward" value="${forward}" /></div>`);
     row.append('<div class="col-auto"><button type="button" class="btn btn-danger remove-rule">&times;</button></div>');
     $('#rules').append(row);
+
+    // Сохраняем ссылку на элементы для последующего чтения/удаления
+    ruleMap.push({
+        row,
+        matchInput: row.find('.rule-match'),
+        forwardInput: row.find('.rule-forward')
+    });
 }
 
 /**
@@ -23,6 +33,7 @@ module.exports = function initForm() {
             console.debug('Loaded config', cfg);
             $('#listen').val(cfg.listen || '');
             $('#rules').empty();
+            ruleMap.length = 0; // сбрасываем локальный массив
             (cfg.rules || []).forEach(rule => addRuleRow(rule.match, rule.forward));
         });
     }
@@ -34,9 +45,11 @@ module.exports = function initForm() {
             listen: $('#listen').val().trim(),
             rules: []
         };
-        $('#rules .rule-row').each(function () {
-            const match = $(this).find('.rule-match').val().trim();
-            const forward = $(this).find('.rule-forward').val().trim();
+
+        // Собираем данные из локальной карты правил
+        ruleMap.forEach(item => {
+            const match = item.matchInput.val().trim();
+            const forward = item.forwardInput.val().trim();
             if (match && forward) {
                 config.rules.push({ match, forward });
             }
@@ -55,7 +68,13 @@ module.exports = function initForm() {
     // Добавление/удаление правил
     $('#add-rule').on('click', () => addRuleRow());
     $('#rules').on('click', '.remove-rule', function () {
-        $(this).closest('.rule-row').remove();
+        const row = $(this).closest('.rule-row');
+        // Удаляем из DOM и из локального массива
+        const idx = ruleMap.findIndex(r => r.row.is(row));
+        if (idx >= 0) {
+            ruleMap.splice(idx, 1);
+        }
+        row.remove();
     });
 
     loadConfig();
