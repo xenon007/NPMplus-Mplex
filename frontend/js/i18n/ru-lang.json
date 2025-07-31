@@ -116,7 +116,7 @@
     "title": "Мёртвые хосты"
   },
   "footer": {
-    "text": " — MIT-лицензия от <a href=\"{url1}\" target=\"_blank\">jc21.com</a> NPM, <a href=\"{url2}\" target=\"_blank\">ZoeyVid</a> NPMplus и участников — Тема <a href=\"{url3}\" target=\"_blank\">Tabler v0.0.31</a>",
+    "text": " — Лицензия MIT. NPM автор <a href=\"{url1}\" target=\"_blank\">jc21.com</a>, NPMplus автор <a href=\"{url2}\" target=\"_blank\">ZoeyVid</a>, автор перевода <a href=\"https://x07.it/\" target=\"_blank\">Xenon007</a> — Тема <a href=\"{url3}\" target=\"_blank\">Tabler</a> v0.0.31, версия с мультиплексером <a href=\"https://github.com/cfal/shoes\" target=\"_blank\">Shoes</a>",
     "repo": "Репозиторий на GitHub",
     "toggle-dark": "Переключить тёмную тему"
   },
@@ -134,7 +134,7 @@
     "logged-in": "Вы вошли как {name}",
     "sign-in-as": "Войти снова как {name}",
     "unknown-user": "Неизвестный пользователь",
-    "version": "2.12.3",
+    "version": "2.12.3.0731",
     "welcome": "Добро пожаловать в NPMplus! Перевод Xenon007"
   },
   "menu": {
