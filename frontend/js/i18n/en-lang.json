@@ -262,7 +262,14 @@
     "delete-confirm": "Delete this stream?",
     "play": "Play",
     "save-m3u": "Save M3U",
-    "save-pls": "Save PLS"
+    "save-pls": "Save PLS",
+    "alias": "Alias",
+    "link": "Link",
+    "hide-token": "Hide token",
+    "category-news": "News",
+    "category-music": "Music",
+    "category-talk": "Talk",
+    "category-other": "Other"
   },
   "tls": {
     "certbot": "Certbot",

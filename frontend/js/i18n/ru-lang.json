@@ -262,7 +262,14 @@
     "delete-confirm": "Удалить этот источник?",
     "play": "Воспроизвести",
     "save-m3u": "Сохранить M3U",
-    "save-pls": "Сохранить PLS"
+    "save-pls": "Сохранить PLS",
+    "alias": "Алиас",
+    "link": "Ссылка",
+    "hide-token": "Спрятать токен",
+    "category-news": "Новости",
+    "category-music": "Музыка",
+    "category-talk": "Разговорное",
+    "category-other": "Другое"
   },
   "tls": {
     "certbot": "Certbot",
