@@ -93,6 +93,7 @@ class MultiplexorServices {
             card.style.cursor = 'pointer';
             // persist state on the element so the handler can read it later
             card.dataset.active = isActive;
+            card.dataset.serviceId = service.id;
 
             card.innerHTML = `
                 <div class="card-body p-3">
@@ -109,8 +110,25 @@ class MultiplexorServices {
             `;
 
             card.addEventListener('click', () => {
+                const nextState = card.dataset.active !== 'true';
+                card.dataset.active = nextState;
+                card.classList.toggle('bg-primary', nextState);
+                card.classList.toggle('text-white', nextState);
+
+                const stamp = card.querySelector('.stamp');
+                if (stamp) {
+                    stamp.classList.toggle('bg-white', nextState);
+                    stamp.classList.toggle('text-primary', nextState);
+                    stamp.classList.toggle('bg-primary', !nextState);
+                }
+
+                const small = card.querySelector('small');
+                if (small) {
+                    small.classList.toggle('text-white', nextState);
+                    small.classList.toggle('text-muted', !nextState);
+                }
+
                 if (typeof onToggle === 'function') {
-                    const nextState = card.dataset.active !== 'true';
                     console.debug('Toggle service', service.id, '->', nextState);
                     onToggle(service, nextState);
                 }
