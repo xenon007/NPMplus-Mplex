@@ -501,6 +501,21 @@ module.exports = {
     },
 
     /**
+     * Multiplexor
+     */
+    showMultiplexor: function () {
+        const controller = this;
+        if (Cache.User.isAdmin()) {
+            require(['./main', './multiplexor/main'], (App, View) => {
+                controller.navigate('/multiplexor');
+                App.UI.showAppContent(new View());
+            });
+        } else {
+            this.showDashboard();
+        }
+    },
+
+    /**
      * Настройки внешних сервисов
      */
     showServices: function () {
