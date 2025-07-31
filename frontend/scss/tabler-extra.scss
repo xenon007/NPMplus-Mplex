@@ -2,6 +2,7 @@ $teal: #2bcbba;
 $yellow: #f1c40f;
 $blue: #467fcf;
 $pink: #f66d9b;
+$purple: #a55eea;
 
 .tag {
     margin-bottom: .5em;
@@ -16,6 +17,12 @@ $pink: #f66d9b;
 
 .tag.hover-red:hover, .tag.hover-red:active, .tag.hover-red:focus {
     background-color: #cd201f;
+    cursor: pointer;
+    color: #fff;
+}
+
+.tag.hover-purple:hover, .tag.hover-purple:active, .tag.hover-purple:focus {
+    background-color: $purple;
     cursor: pointer;
     color: #fff;
 }
