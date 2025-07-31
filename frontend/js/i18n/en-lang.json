@@ -256,7 +256,9 @@
   "audio-streams": {
     "title": "Audio Streams",
     "add": "Add Stream",
-    "import": "Import Playlist"
+    "import": "Import Playlist",
+    "delete": "Delete",
+    "delete-confirm": "Delete this stream?"
   },
   "tls": {
     "certbot": "Certbot",

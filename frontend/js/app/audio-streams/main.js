@@ -17,7 +17,8 @@ module.exports = Mn.View.extend({
     events: {
         'click @ui.importBtn': 'openImportDialog',
         'change @ui.importFile': 'handleImport',
-        'click @ui.addBtn': 'handleAdd'
+        'click @ui.addBtn': 'handleAdd',
+        'click .delete-stream': 'handleDelete'
     },
 
     initialize: function () {
@@ -99,7 +100,9 @@ module.exports = Mn.View.extend({
 
         this.streams.forEach((stream) => {
             const li = document.createElement('li');
-            li.textContent = stream.name + ' - ' + stream.url;
+            li.className = 'd-flex justify-content-between align-items-center mb-1';
+            li.innerHTML = `<span>${stream.name} - ${stream.url}</span>` +
+                `<button class="btn btn-sm btn-link text-danger delete-stream" data-id="${stream.id}" title="${App.i18n('audio-streams','delete')}"><i class="fe fe-trash"></i></button>`;
             list.appendChild(li);
         });
     },
@@ -157,10 +160,45 @@ module.exports = Mn.View.extend({
         return streams;
     },
 
-    // Заглушка для ручного добавления стрима
+    // Простое добавление нового стрима через prompt
     handleAdd: function (e) {
         e.preventDefault();
-        console.log('Add stream clicked');
-        // Здесь в будущем может открываться форма добавления
+        const name = prompt('Название потока:');
+        const url  = name ? prompt('URL потока:') : null;
+        if (!name || !url) {
+            return;
+        }
+        const view = this;
+        fetch('/api/audio-streams', {
+            method:  'POST',
+            headers: {'Content-Type': 'application/json'},
+            body:    JSON.stringify({name: name, url: url})
+        })
+            .then(res => res.json())
+            .then(data => {
+                view.streams.push(data);
+                view.renderStreams();
+            })
+            .catch(err => {
+                console.error('Failed to add stream', err);
+            });
+    },
+
+    // Удаление стрима
+    handleDelete: function (e) {
+        e.preventDefault();
+        const id = parseInt(e.currentTarget.getAttribute('data-id'), 10);
+        if (!id || !confirm(App.i18n('audio-streams','delete-confirm'))) {
+            return;
+        }
+        const view = this;
+        fetch(`/api/audio-streams/${id}`, {method: 'DELETE'})
+            .then(() => {
+                view.streams = view.streams.filter(s => s.id !== id);
+                view.renderStreams();
+            })
+            .catch(err => {
+                console.error('Failed to delete stream', err);
+            });
     }
 });
