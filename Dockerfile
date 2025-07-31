@@ -1,17 +1,16 @@
 # syntax=docker/dockerfile:labs
-FROM --platform="$BUILDPLATFORM" alpine:3.22.0 AS frontend
+FROM --platform="$BUILDPLATFORM" node:20-alpine AS frontend
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 ARG NODE_ENV=production
-COPY frontend                        /app
+COPY frontend /app
 COPY global/certbot-dns-plugins.json /app/certbot-dns-plugins.json
 WORKDIR /app/frontend
-RUN apk upgrade --no-cache -a && \
-    apk add --no-cache ca-certificates nodejs yarn git python3 py3-pip build-base && \
-    yarn install && \
-    yarn build
+#RUN apk upgrade --no-cache -a && \
+#    apk add --no-cache ca-certificates nodejs yarn openssh git python3 py3-pip build-base
+#RUN yarn install
+#RUN yarn build
 COPY darkmode.css /app/dist/css/darkmode.css
 COPY security.txt /app/dist/.well-known/security.txt
-
 
 FROM --platform="$BUILDPLATFORM" alpine:3.22.0 AS build-backend
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
@@ -27,7 +26,8 @@ RUN apk upgrade --no-cache -a && \
     elif [ "$TARGETARCH" = "arm64" ]; then npm_config_arch=arm64 npm_config_target_arch=arm64 yarn install; rm -vr /app/node_modules/bcrypt/prebuilds/darwin-* /app/node_modules/bcrypt/prebuilds/win32-* /app/node_modules/bcrypt/prebuilds/linux-arm /app/node_modules/bcrypt/prebuilds/linux-x64 /app/node_modules/bcrypt/prebuilds/linux-arm64/bcrypt.glibc.node; \
     else yarn install; fi && \
     yarn cache clean && \
-    clean-modules --yes
+    clean-modules --yes \
+
 FROM alpine:3.22.0 AS strip-backend
 COPY --from=build-backend /app /app
 RUN apk upgrade --no-cache -a && \

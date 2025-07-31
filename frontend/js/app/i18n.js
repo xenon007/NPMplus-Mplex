@@ -17,6 +17,10 @@ module.exports = function (namespace, key, data) {
         messages = { ...messages, ...require('../i18n/it-lang.json') };
     }
 
+    if (locale.includes('ru')) {
+        messages = { ...messages, ...require('../i18n/ru-lang.json') };
+    }
+
     if (locale.includes('zh')) {
         messages = { ...messages, ...require('../i18n/zh-lang.json') };
     }
