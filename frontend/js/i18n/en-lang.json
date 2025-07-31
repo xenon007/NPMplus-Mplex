@@ -253,6 +253,9 @@
     "udp": "UDP",
     "udp-forwarding": "UDP Forwarding"
   },
+  "audio-streams": {
+    "title": "Audio Streams"
+  },
   "tls": {
     "certbot": "Certbot",
     "certbot-agree": "I Agree to the <a href=\"{url}\" target=\"_blank\">Let's Encrypt Terms of Service</a> / ToS of custom set CA",

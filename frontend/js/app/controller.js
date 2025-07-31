@@ -210,13 +210,24 @@ module.exports = {
 	 *
 	 * @param model
 	 */
-	showNginxStreamDeleteConfirm: function (model) {
-		if (Cache.User.isAdmin() || Cache.User.canManage('streams')) {
-			require(['./main', './nginx/stream/delete'], function (App, View) {
-				App.UI.showModalDialog(new View({model: model}));
-			});
-		}
-	},
+        showNginxStreamDeleteConfirm: function (model) {
+                if (Cache.User.isAdmin() || Cache.User.canManage('streams')) {
+                        require(['./main', './nginx/stream/delete'], function (App, View) {
+                                App.UI.showModalDialog(new View({model: model}));
+                        });
+                }
+        },
+
+        /**
+         * Audio Streams page
+         */
+        showAudioStreams: function () {
+                const controller = this;
+                require(['./main', './audio-streams/main'], (App, View) => {
+                        controller.navigate('/audio/streams');
+                        App.UI.showAppContent(new View());
+                });
+        },
 
 	/**
 	 * Nginx Dead Hosts

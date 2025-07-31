@@ -253,6 +253,9 @@
     "udp": "UDP",
     "udp-forwarding": "UDP-переадресация"
   },
+  "audio-streams": {
+    "title": "Аудио стримы"
+  },
   "tls": {
     "certbot": "Certbot",
     "certbot-agree": "Я принимаю <a href=\"{url}\" target=\"_blank\">условия Let's Encrypt</a> / условия пользовательского ЦС",
