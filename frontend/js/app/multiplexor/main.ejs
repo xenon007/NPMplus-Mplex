@@ -13,7 +13,7 @@
                 <div class="form-group">
                     <label class="form-label">Порт для прослушивания</label>
                     <div class="input-group">
-                        <input type="text" class="form-control" id="listen-port" placeholder=":443" value="<%= config.listen %>">
+                        <input type="text" class="form-control" id="listen-port" placeholder=":443">
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-primary">Сохранить</button>
                         </div>
@@ -93,7 +93,7 @@
         <div class="card-body collapse" id="raw-yaml-content">
             <form action="/multiplexor/save" method="post">
                 <div class="form-group">
-                    <textarea name="config" rows="15" class="form-control"><%= configYaml %></textarea>
+                    <textarea name="config" id="raw-config" rows="15" class="form-control" placeholder="# YAML будет загружен автоматически"></textarea>
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-secondary">Сохранить YAML</button>
@@ -137,9 +137,11 @@
 </div>
 
 <script src="/multiplexor/ui/services.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>
 <script>
     $(document).ready(function() {
-        // Load services and rules
+        // Load config, services and rules
+        loadConfig();
         initializeServices();
         loadRules();
 
@@ -151,6 +153,10 @@
                 alert('Пожалуйста, укажите порт для прослушивания');
                 return;
             }
+            if (!isValidListen(listen)) {
+                alert('Неверный формат. Используйте host:port или :port');
+                return;
+            }
 
             $.ajax({
                 url: '/multiplexor/api/listen',
@@ -160,6 +166,7 @@
                 success: function(response) {
                     if (response.success) {
                         showNotification('Порт успешно обновлен', 'success');
+                        loadConfig();
                     } else {
                         showNotification('Ошибка при обновлении порта', 'danger');
                     }
@@ -204,6 +211,10 @@
                 alert('Пожалуйста, заполните все поля');
                 return;
             }
+            if (!isValidHostPort(forward)) {
+                alert('Некорректный формат перенаправления. Используйте host:port');
+                return;
+            }
 
             if (index === '') {
                 // Add new rule
@@ -216,6 +227,7 @@
                         if (response.success) {
                             $('#rule-modal').modal('hide');
                             loadRules();
+                            loadConfig();
                             showNotification('Правило успешно добавлено', 'success');
                         } else {
                             showNotification('Ошибка при добавлении правила', 'danger');
@@ -236,6 +248,7 @@
                         if (response.success) {
                             $('#rule-modal').modal('hide');
                             loadRules();
+                            loadConfig();
                             showNotification('Правило успешно обновлено', 'success');
                         } else {
                             showNotification('Ошибка при обновлении правила', 'danger');
@@ -247,6 +260,43 @@
                 });
             }
         });
+
+        // Load config from server and populate form fields
+        function loadConfig() {
+            $.ajax({
+                url: '/multiplexor/api/config',
+                method: 'GET',
+                success: function(cfg) {
+                    if (cfg.listen) {
+                        $('#listen-port').val(cfg.listen);
+                    }
+                    if (typeof jsyaml !== 'undefined') {
+                        $('#raw-config').val(jsyaml.dump(cfg));
+                    }
+                },
+                error: function() {
+                    showNotification('Ошибка при загрузке конфигурации', 'danger');
+                }
+            });
+        }
+
+        // Проверка номера порта
+        function isValidPort(port) {
+            const num = parseInt(port, 10);
+            return Number.isInteger(num) && num > 0 && num <= 65535;
+        }
+
+        // Проверка строки формата host:port
+        function isValidHostPort(value) {
+            const match = value.match(/^([^:]+):(\d{1,5})$/);
+            return match && isValidPort(match[2]);
+        }
+
+        // Проверка строки формата host:port или :port
+        function isValidListen(value) {
+            const match = value.match(/^([^:]*):(\d{1,5})$/);
+            return match && isValidPort(match[2]);
+        }
 
         // Initialize services
         async function initializeServices() {
@@ -328,6 +378,7 @@
                         if (response.success) {
                             loadRules();
                             renderServiceCards();
+                            loadConfig();
                             showNotification(`Сервис ${service.name} успешно добавлен`, 'success');
                         } else {
                             showNotification('Ошибка при добавлении сервиса', 'danger');
@@ -348,6 +399,7 @@
                         if (ruleIndex !== -1) {
                             deleteRule(ruleIndex, function() {
                                 renderServiceCards();
+                                loadConfig();
                                 showNotification(`Сервис ${service.name} успешно удален`, 'success');
                             });
                         }
@@ -483,6 +535,7 @@
                     success: function(response) {
                         if (response.success) {
                             loadRules();
+                            loadConfig();
                             if (typeof callback === 'function') {
                                 callback();
                             } else {
