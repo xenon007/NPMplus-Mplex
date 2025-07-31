@@ -110,6 +110,7 @@ module.exports = Mn.View.extend({
             const aliasLabel = stream.alias || stream.name;
             row.innerHTML    =
                 `<td><div class="wrap"><span class="tag host-link hover-purple" rel="${aliasUrl}">${aliasLabel}</span></div></td>` +
+                `<td>${stream.category || ''}</td>` +
                 `<td><div class="text-monospace"><span class="host-link" rel="${stream.url}">${stream.url}</span></div></td>` +
                 `<td class="text-right"><div class="btn-list">` +
                 `<button class="btn btn-sm btn-outline-primary play-stream mr-2" data-id="${stream.id}" title="${App.i18n('audio-streams','play')}"><i class="fe fe-play"></i></button>` +
@@ -124,11 +125,7 @@ module.exports = Mn.View.extend({
         if (!stream || !stream.url) {
             return '';
         }
-        // Если в адресе присутствует токен, используем проксированный путь
-        if (/token=/i.test(stream.url) || /signature=/i.test(stream.url)) {
-            return `/api/audio-streams/${stream.id}/play`;
-        }
-        return stream.url;
+        return `/api/audio-streams/${stream.id}/play`;
     },
 
     // Парсер текстовых плейлистов (M3U/M3U8/PLS)
@@ -190,6 +187,7 @@ module.exports = Mn.View.extend({
         const name  = prompt('Название потока:');
         const url   = name ? prompt('URL потока:') : null;
         const alias = name && url ? prompt('Алиас (опционально):', name.replace(/\s+/g, '').toLowerCase()) : null;
+        const category = name && url ? prompt('Категория (опционально):') : null;
         if (!name || !url) {
             return;
         }
@@ -197,7 +195,7 @@ module.exports = Mn.View.extend({
         fetch('/api/audio-streams', {
             method:  'POST',
             headers: {'Content-Type': 'application/json'},
-            body:    JSON.stringify({name: name, url: url, alias: alias || undefined})
+            body:    JSON.stringify({name: name, url: url, alias: alias || undefined, category: category || ''})
         })
             .then(res => res.json())
             .then(data => {

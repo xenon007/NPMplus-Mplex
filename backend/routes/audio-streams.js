@@ -1,140 +1,127 @@
 const express = require('express');
-// используем общий логгер для наглядности
-const logger  = require('../logger').audio;
+const http = require('http');
+const https = require('https');
+const logger = require('../logger').audio;
+const AudioStream = require('../models/audio_stream');
 
-// Простая реализация API для аудио стримов
-// На данном этапе данные хранятся только в памяти
 let router = express.Router({
         caseSensitive: true,
         strict: true,
         mergeParams: true,
 });
 
-// Временное хранилище добавленных потоков
-// В дальнейшем это будет заменено на базу данных
-let streams = [
-        {
-                id:         1,
-                name:       'Demo Stream',
-                alias:      'demo-stream',
-                url:        'http://example.com/stream',
-                format:     'mp3',
-                bitrate:    128,
-                token_type: 'not_used',
-                token:      '',
-                token_mask: '',
-                buffer:     0,
-        },
-];
-
-// вспомогательная функция для поиска потока по id
-function findStream(id) {
-        return streams.find((s) => s.id === id);
+function buildUrl(stream) {
+        let target = stream.url;
+        if (stream.token && stream.token_mask) {
+                target = stream.url + stream.token_mask.replace('{token}', stream.token);
+        }
+        return target;
 }
 
-/**
- * /api/audio-streams
- */
 router
         .route('/')
-        .get((req, res) => {
-                // Возвращаем все сохраненные потоки
-                res.status(200).send(streams);
+        .get(async (req, res) => {
+                const items = await AudioStream.query().where('is_deleted', 0);
+                res.status(200).send(items);
         })
-
-        // Создание нового аудио потока
-        .post(express.json(), (req, res) => {
-                const nextId = streams.length ? Math.max(...streams.map((s) => s.id)) + 1 : 1;
-                const body   = req.body || {};
-                const stream = {
-                        id:         nextId,
-                        name:       body.name || `Stream ${nextId}`,
-                        alias:      body.alias || `stream${nextId}`,
-                        url:        body.url || '',
-                        format:     body.format || '',
-                        bitrate:    typeof body.bitrate === 'number' ? body.bitrate : 0,
-                        token_type: body.token_type || 'not_used',
-                        token:      body.token || '',
-                        token_mask: body.token_mask || '',
-                        buffer:     typeof body.buffer === 'number' ? body.buffer : 0,
-                };
-                streams.push(stream);
-                logger.info('Добавлен поток: %s', stream.name);
-                res.status(201).send(stream);
+        .post(express.json(), async (req, res) => {
+                try {
+                        const body = req.body || {};
+                        const stream = await AudioStream.query().insert({
+                                name: body.name || 'Stream',
+                                alias: body.alias || (body.name ? body.name.replace(/\s+/g, '').toLowerCase() : 'stream'),
+                                url: body.url || '',
+                                format: body.format || '',
+                                bitrate: typeof body.bitrate === 'number' ? body.bitrate : 0,
+                                token_type: body.token_type || 'not_used',
+                                token: body.token || '',
+                                token_mask: body.token_mask || '',
+                                buffer: typeof body.buffer === 'number' ? body.buffer : 0,
+                                category: body.category || '',
+                        });
+                        logger.info('Добавлен поток: %s', stream.name);
+                        res.status(201).send(stream);
+                } catch (err) {
+                        logger.error('Ошибка добавления потока: %s', err.message);
+                        res.status(500).send({ error: 'failed to add stream' });
+                }
         });
 
-/**
- * Импорт аудио потоков из плейлистов
- * Принимает массив объектов {name, url}
- */
-router.post('/import', express.json(), (req, res) => {
+router.post('/import', express.json(), async (req, res) => {
         const items = Array.isArray(req.body) ? req.body : [];
-        const added = items.map((item, idx) => {
-                // простое назначение id
-                const stream = {
-                        id:         streams.length + idx + 1,
-                        name:       item.name || `Stream ${streams.length + idx + 1}`,
-                        alias:      item.alias || `stream${streams.length + idx + 1}`,
-                        url:        item.url || '',
-                        format:     item.format || '',
-                        bitrate:    item.bitrate || 0,
+        const added = [];
+        for (const item of items) {
+                const stream = await AudioStream.query().insert({
+                        name: item.name || 'Stream',
+                        alias: item.alias || (item.name ? item.name.replace(/\s+/g, '').toLowerCase() : 'stream'),
+                        url: item.url || '',
+                        format: item.format || '',
+                        bitrate: typeof item.bitrate === 'number' ? item.bitrate : 0,
                         token_type: item.token_type || 'not_used',
-                        token:      item.token || '',
+                        token: item.token || '',
                         token_mask: item.token_mask || '',
-                        buffer:     typeof item.buffer === 'number' ? item.buffer : 0,
-                };
-                streams.push(stream);
-                return stream;
-        });
-
+                        buffer: typeof item.buffer === 'number' ? item.buffer : 0,
+                        category: item.category || '',
+                });
+                added.push(stream);
+        }
         res.status(200).send(added);
 });
 
-// CRUD операции над конкретным потоком
 router
         .route('/:id')
-        // Получить поток по ID
-        .get((req, res) => {
-                const id     = Number(req.params.id);
-                const stream = findStream(id);
-                if (!stream) {
-                        return res.sendStatus(404);
-                }
-                res.status(200).send(stream);
-        })
-        // Обновить поток
-        .put(express.json(), (req, res) => {
-                const id     = Number(req.params.id);
-                const stream = findStream(id);
-                if (!stream) {
-                        return res.sendStatus(404);
-                }
-                Object.assign(stream, req.body || {});
-                logger.info('Обновлен поток: %s', stream.name);
-                res.status(200).send(stream);
-        })
-        // Удалить поток
-        .delete((req, res) => {
+        .get(async (req, res) => {
                 const id = Number(req.params.id);
-                const idx = streams.findIndex((s) => s.id === id);
-                if (idx === -1) {
+                const stream = await AudioStream.query().findById(id);
+                if (!stream || stream.is_deleted) {
                         return res.sendStatus(404);
                 }
-                const removed = streams.splice(idx, 1)[0];
-                logger.info('Удален поток: %s', removed.name);
+                res.status(200).send(stream);
+        })
+        .put(express.json(), async (req, res) => {
+                const id = Number(req.params.id);
+                const stream = await AudioStream.query().findById(id);
+                if (!stream) {
+                        return res.sendStatus(404);
+                }
+                const updated = await AudioStream.query().patchAndFetchById(id, req.body || {});
+                logger.info('Обновлен поток: %s', updated.name);
+                res.status(200).send(updated);
+        })
+        .delete(async (req, res) => {
+                const id = Number(req.params.id);
+                await AudioStream.query().deleteById(id);
+                logger.info('Удален поток ID %s', id);
                 res.sendStatus(204);
         });
 
-// Маршрут для воспроизведения потока по алиасу
-router.get('/:id/play', (req, res) => {
-        const id     = Number(req.params.id);
-        const stream = findStream(id);
+router.get('/:id/play', async (req, res) => {
+        const id = Number(req.params.id);
+        const stream = await AudioStream.query().findById(id);
         if (!stream) {
                 return res.sendStatus(404);
         }
-        // Простейшая реализация проксирования через редирект
-        logger.info('Запрос потока по алиасу: %s', stream.alias);
-        res.redirect(stream.url);
+        const targetUrl = buildUrl(stream);
+        logger.info('Проксирование потока: %s -> %s', stream.alias, targetUrl);
+        try {
+                const parsed = new URL(targetUrl);
+                const client = parsed.protocol === 'https:' ? https : http;
+                const proxy = client.get(parsed, (r) => {
+                        res.writeHead(r.statusCode, r.headers);
+                        r.pipe(res);
+                });
+                proxy.on('error', (err) => {
+                        logger.error('Ошибка проксирования: %s', err.message);
+                        if (!res.headersSent) {
+                                res.sendStatus(502);
+                        } else {
+                                res.end();
+                        }
+                });
+        } catch (err) {
+                logger.error('Некорректный URL: %s', err.message);
+                res.sendStatus(500);
+        }
 });
 
 module.exports = router;
