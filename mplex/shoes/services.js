@@ -84,11 +84,15 @@ class MultiplexorServices {
         container.innerHTML = '';
 
         this.services.forEach(service => {
+            // Determine if the service is currently active
             const isActive = activeServices.includes(service.id);
+            console.debug('Render service card', service.id, 'active:', isActive);
 
             const card = document.createElement('div');
             card.className = `card ${isActive ? 'bg-primary text-white' : ''}`;
             card.style.cursor = 'pointer';
+            // persist state on the element so the handler can read it later
+            card.dataset.active = isActive;
 
             card.innerHTML = `
                 <div class="card-body p-3">
@@ -105,7 +109,9 @@ class MultiplexorServices {
             `;
             card.addEventListener('click', () => {
                 if (typeof onToggle === 'function') {
-                    onToggle(service, !isActive);
+                    const nextState = card.dataset.active !== 'true';
+                    console.debug('Toggle service', service.id, '->', nextState);
+                    onToggle(service, nextState);
                 }
             });
 
