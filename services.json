@@ -12,7 +12,7 @@
   {
     "id": "shoes",
     "name": "Shoes",
-    "config": "/services/shoes.conf"
+    "config": "/services/shoes.yaml"
   },
   {
     "id": "protoplex",
