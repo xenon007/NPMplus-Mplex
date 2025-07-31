@@ -69,6 +69,7 @@ ARG CRS_VER=v4.15.0
 
 COPY rootfs /
 COPY --from=strip-backend /app /app
+COPY services.json /app/services.json
 WORKDIR /app
 
 RUN apk upgrade --no-cache -a && \

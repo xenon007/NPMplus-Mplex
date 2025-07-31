@@ -1,0 +1,27 @@
+[
+  {
+    "id": "crowdsec",
+    "name": "CrowdSec",
+    "config": "/services/crowdsec.yaml"
+  },
+  {
+    "id": "caddy",
+    "name": "Caddy Redirect",
+    "config": "/services/Caddyfile"
+  },
+  {
+    "id": "shoes",
+    "name": "Shoes",
+    "config": "/services/shoes.conf"
+  },
+  {
+    "id": "protoplex",
+    "name": "Protoplex",
+    "config": "/services/protoplex.toml"
+  },
+  {
+    "id": "sslh",
+    "name": "sslh",
+    "config": "/services/sslh.cfg"
+  }
+]
