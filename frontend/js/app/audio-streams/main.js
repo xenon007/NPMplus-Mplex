@@ -1,6 +1,8 @@
-const Mn  = require('backbone.marionette');
-const App = require('../main');
-const tpl = require('./main.ejs');
+const Mn       = require('backbone.marionette');
+const Backbone = require('backbone');
+const App      = require('../main');
+const tpl      = require('./main.ejs');
+const EditView = require('./edit');
 
 // Представление страницы аудио стримов
 module.exports = Mn.View.extend({
@@ -24,7 +26,8 @@ module.exports = Mn.View.extend({
         'click @ui.saveM3uBtn': 'downloadM3u',
         'click @ui.savePlsBtn': 'downloadPls',
         'click .delete-stream': 'handleDelete',
-        'click .play-stream': 'handlePlay'
+        'click .play-stream': 'handlePlay',
+        'click .edit-stream': 'handleEdit'
     },
 
     initialize: function () {
@@ -113,11 +116,36 @@ module.exports = Mn.View.extend({
                 `<td>${stream.category || ''}</td>` +
                 `<td><div class="text-monospace"><span class="host-link" rel="${stream.url}">${stream.url}</span></div></td>` +
                 `<td class="text-right"><div class="btn-list">` +
+                `<button class="btn btn-sm btn-outline-secondary edit-stream mr-2" data-id="${stream.id}" title="${App.i18n('str','edit')}"><i class="fe fe-edit-2"></i></button>` +
                 `<button class="btn btn-sm btn-outline-primary play-stream mr-2" data-id="${stream.id}" title="${App.i18n('audio-streams','play')}"><i class="fe fe-play"></i></button>` +
                 `<button class="btn btn-sm btn-link text-danger delete-stream" data-id="${stream.id}" title="${App.i18n('audio-streams','delete')}"><i class="fe fe-trash"></i></button>` +
                 `</div></td>`;
             list.appendChild(row);
         });
+    },
+
+    // Редактирование существующего стрима в модальном окне
+    handleEdit: function (e) {
+        e.preventDefault();
+        const id     = parseInt(e.currentTarget.getAttribute('data-id'), 10);
+        const stream = this.streams.find(s => s.id === id);
+        if (!stream) {
+            return;
+        }
+
+        const view  = this;
+        const model = new Backbone.Model(stream);
+        const modal = new EditView({model: model});
+
+        modal.on('saved', function (updated) {
+            const idx = view.streams.findIndex(s => s.id === updated.id);
+            if (idx !== -1) {
+                view.streams[idx] = updated;
+                view.renderStreams();
+            }
+        });
+
+        App.UI.showModalDialog(modal);
     },
 
     // Получение URL алиаса или исходного адреса
