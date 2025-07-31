@@ -16,7 +16,9 @@ module.exports = Mn.View.extend({
         addBtn:      '.add-stream',
         saveM3uBtn:  '.save-m3u',
         savePlsBtn:  '.save-pls',
-        audioPlayer: '#audio-player'
+        audioPlayer: '#audio-player',
+        domainSelect: '.domain-select',
+        saveDomainBtn: '.save-domain'
     },
 
     events: {
@@ -25,6 +27,7 @@ module.exports = Mn.View.extend({
         'click @ui.addBtn': 'handleAdd',
         'click @ui.saveM3uBtn': 'downloadM3u',
         'click @ui.savePlsBtn': 'downloadPls',
+        'click @ui.saveDomainBtn': 'handleSaveDomain',
         'click .delete-stream': 'handleDelete',
         'click .play-stream': 'handlePlay',
         'click .edit-stream': 'handleEdit'
@@ -40,6 +43,9 @@ module.exports = Mn.View.extend({
         // Логирование для отладки
         console.log('Audio Streams view rendered');
 
+        // Загружаем доступные домены из списка прокси хостов
+        this.loadDomains();
+
         // Получаем список аудио потоков с API
         fetch('/api/audio-streams')
             .then((response) => response.json())
@@ -50,6 +56,46 @@ module.exports = Mn.View.extend({
             .catch((err) => {
                 console.error('Failed to load audio streams', err);
             });
+    },
+
+    // Загрузка доменных имен из прокси хостов
+    loadDomains: function () {
+        const view = this;
+        const select = this.getUI('domainSelect')[0];
+        if (!select) {
+            return;
+        }
+        App.Api.Nginx.ProxyHosts.getAll()
+            .then((hosts) => {
+                const current = localStorage.getItem('audioStreamDomain') || '';
+                const domains = new Set();
+                hosts.forEach((h) => {
+                    (h.domain_names || []).forEach((d) => domains.add(d));
+                });
+                select.innerHTML = `<option value="">${App.i18n('audio-streams','select-domain')}</option>`;
+                domains.forEach((d) => {
+                    const opt = document.createElement('option');
+                    opt.value = d;
+                    opt.textContent = d;
+                    if (d === current) {
+                        opt.selected = true;
+                    }
+                    select.appendChild(opt);
+                });
+            })
+            .catch((err) => {
+                console.error('Failed to load proxy hosts', err);
+            });
+    },
+
+    // Сохраняет выбранный домен в localStorage
+    handleSaveDomain: function (e) {
+        e.preventDefault();
+        const select = this.getUI('domainSelect')[0];
+        if (select) {
+            localStorage.setItem('audioStreamDomain', select.value);
+            console.log('Domain saved for audio streams', select.value);
+        }
     },
 
     // Открывает диалог выбора файла
@@ -150,10 +196,16 @@ module.exports = Mn.View.extend({
 
     // Получение URL алиаса или исходного адреса
     getAliasUrl: function (stream) {
-        if (!stream || !stream.url) {
+        if (!stream || !stream.id) {
             return '';
         }
-        return `/api/audio-streams/${stream.id}/play`;
+        const domain = localStorage.getItem('audioStreamDomain');
+        const path   = `/api/audio-streams/${stream.id}/play`;
+        if (domain) {
+            const proto = window.location.protocol;
+            return `${proto}//${domain}${path}`;
+        }
+        return path;
     },
 
     // Парсер текстовых плейлистов (M3U/M3U8/PLS)
