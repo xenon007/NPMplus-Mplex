@@ -47,13 +47,13 @@ jobs:
           platforms: linux/amd64,linux/arm64 
           push: true
           tags: |
-            zoeyvid/npmplus:latest
+            xenon007/npmplus:latest
             ghcr.io/xenon007/npmplus:latest
-            zoeyvid/npmplus:${{ inputs.tag }}
+            xenon007/npmplus:${{ inputs.tag }}
             ghcr.io/xenon007/npmplus:${{ inputs.tag }}
-            zoeyvid/npmplus:${{ github.run_number }}
+            xenon007/npmplus:${{ github.run_number }}
             ghcr.io/xenon007/npmplus:${{ github.run_number }}
-            zoeyvid/nginx-proxy-manager:latest
+            xenon007/nginx-proxy-manager:latest
             ghcr.io/xenon007/nginx-proxy-manager:latest
       - name: Show Nginx version
         run: |
