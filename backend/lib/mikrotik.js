@@ -82,13 +82,167 @@ class Mikrotik {
          */
         async createContainer(opts) {
                 log.info('Создание контейнера %s', opts.name);
-                return this._withClient(client => client.menu('/container').add({
+                const payload = {
                         name: opts.name,
                         'remote-image': opts.image,
                         'root-dir': opts.rootDir || `/var/lib/${opts.name}`,
                         interface: opts.interface,
                         start: 'yes',
+                };
+                if (opts.envlist) {
+                        payload.envlist = opts.envlist;
+                }
+                if (opts.mounts && opts.mounts.length) {
+                        payload.mounts = opts.mounts.join(',');
+                }
+                return this._withClient(client => client.menu('/container').add(payload));
+        }
+
+        /**
+         * Список томов (mounts)
+         */
+        async getVolumes() {
+                log.info('Запрос списка томов');
+                return this._withClient(client => client.menu('/container/mounts').getAll());
+        }
+
+        /**
+         * Создание тома
+         * @param {{name:string, src:string, dst:string}} opts
+         */
+        async createVolume(opts) {
+                log.info('Создание тома %s', opts.name);
+                return this._withClient(client => client.menu('/container/mounts').add({
+                        name: opts.name,
+                        src: opts.src,
+                        dst: opts.dst,
                 }));
+        }
+
+        /**
+         * Получить envlist'ы
+         */
+        async getEnvLists() {
+                log.info('Запрос envlist');
+                return this._withClient(client => client.menu('/container/envs').getAll());
+        }
+
+        /**
+         * Создать envlist
+         * @param {string} name
+         * @param {{[key:string]:string}} vars
+         */
+        async createEnvList(name, vars) {
+                log.info('Создание envlist %s', name);
+                return this._withClient(async client => {
+                        const menu = client.menu('/container/envs');
+                        for (const [key, value] of Object.entries(vars)) {
+                                await menu.add({ name, key, value });
+                        }
+                });
+        }
+
+        /**
+         * Обновить envlist (пересоздание)
+         */
+        async updateEnvList(name, vars) {
+                log.info('Обновление envlist %s', name);
+                return this._withClient(async client => {
+                        const menu = client.menu('/container/envs');
+                        const items = await menu.where('name', name).getAll();
+                        for (const item of items) {
+                                await menu.remove(item['.id']);
+                        }
+                        for (const [key, value] of Object.entries(vars)) {
+                                await menu.add({ name, key, value });
+                        }
+                });
+        }
+
+        /**
+         * Список veth интерфейсов
+         */
+        async getVeth() {
+                log.info('Запрос veth интерфейсов');
+                return this._withClient(client => client.menu('/interface/veth').getAll());
+        }
+
+        /**
+         * Создание veth интерфейса
+         */
+        async createVeth(opts) {
+                log.info('Создание veth %s', opts.name);
+                return this._withClient(client => client.menu('/interface/veth').add({
+                        name: opts.name,
+                        address: opts.address,
+                        gateway: opts.gateway,
+                }));
+        }
+
+        /**
+         * Добавление интерфейса в Interface List
+         */
+        async addInterfaceList(iface, list) {
+                log.info('Добавление %s в список %s', iface, list);
+                return this._withClient(client => client.menu('/interface/list/member').add({
+                        interface: iface,
+                        list,
+                }));
+        }
+
+        /**
+         * Добавление интерфейса в бридж
+         */
+        async addBridgePort(iface, bridge) {
+                log.info('Добавление %s в бридж %s', iface, bridge);
+                return this._withClient(client => client.menu('/interface/bridge/port').add({
+                        interface: iface,
+                        bridge,
+                }));
+        }
+
+        /**
+         * Назначение IP адресу интерфейса
+         */
+        async assignIp(iface, address) {
+                log.info('Назначение IP %s интерфейсу %s', address, iface);
+                return this._withClient(client => client.menu('/ip/address').add({
+                        interface: iface,
+                        address,
+                }));
+        }
+
+        /**
+         * Получение правил файрвола, NAT и access list
+         */
+        async getFirewallFilter() {
+                log.info('Запрос firewall filter rules');
+                return this._withClient(client => client.menu('/ip/firewall/filter').getAll());
+        }
+
+        async addFirewallFilter(rule) {
+                log.info('Добавление firewall filter rule');
+                return this._withClient(client => client.menu('/ip/firewall/filter').add(rule));
+        }
+
+        async getNatRules() {
+                log.info('Запрос NAT правил');
+                return this._withClient(client => client.menu('/ip/firewall/nat').getAll());
+        }
+
+        async addNatRule(rule) {
+                log.info('Добавление NAT правила');
+                return this._withClient(client => client.menu('/ip/firewall/nat').add(rule));
+        }
+
+        async getAccessList() {
+                log.info('Запрос address-list');
+                return this._withClient(client => client.menu('/ip/firewall/address-list').getAll());
+        }
+
+        async addAccessList(entry) {
+                log.info('Добавление в address-list');
+                return this._withClient(client => client.menu('/ip/firewall/address-list').add(entry));
         }
 
         /**
