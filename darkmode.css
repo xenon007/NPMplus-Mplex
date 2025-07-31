@@ -74,6 +74,10 @@ pre {
   background-color: rgb(24, 26, 27) !important;
 }
 
+.list-group-item {
+  background-color: #010101;
+}
+
 .selectize-dropdown,
 .selectize-input,
 .selectize-input input {

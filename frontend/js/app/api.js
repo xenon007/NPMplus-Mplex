@@ -754,5 +754,32 @@ module.exports = {
             delete data.id;
             return fetch('put', 'settings/' + id, data);
         }
+    },
+
+    Services: {
+
+        /**
+         * Получить список сервисов
+         */
+        getAll: function () {
+            return fetch('get', 'services');
+        },
+
+        /**
+         * Получить содержимое файла конфигурации
+         * @param {String} id
+         */
+        getConfig: function (id) {
+            return fetch('get', 'services/' + id + '/config');
+        },
+
+        /**
+         * Сохранить конфигурацию
+         * @param {String} id
+         * @param {String} content
+         */
+        saveConfig: function (id, content) {
+            return fetch('post', 'services/' + id + '/config', {content});
+        }
     }
 };

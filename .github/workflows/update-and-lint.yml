@@ -2,7 +2,7 @@ name: update-and-lint
 on:
   push:
     branches:
-      - develop
+      - dev
   schedule:
     - cron: "0 */6 * * *"
   workflow_dispatch:

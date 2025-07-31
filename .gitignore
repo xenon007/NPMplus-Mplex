@@ -786,3 +786,5 @@ node_modules/
 
 config.php
 **/config.php
+
+run.sh

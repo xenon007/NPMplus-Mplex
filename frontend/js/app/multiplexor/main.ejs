@@ -1,0 +1,584 @@
+<div class="container">
+    <!-- Listen Port Card -->
+    <div class="card">
+        <div class="card-status bg-teal"></div>
+        <div class="card-header">
+            <h3 class="card-title">Настройки порта мультиплексора</h3>
+            <div class="card-options">
+                <a href="#" class="btn btn-outline-secondary btn-sm ml-2 help"><i class="fe fe-help-circle"></i></a>
+            </div>
+        </div>
+        <div class="card-body">
+            <form id="listen-form" class="form">
+                <div class="form-group">
+                    <label class="form-label">Порт для прослушивания</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="listen-port" placeholder=":443">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">Сохранить</button>
+                        </div>
+                    </div>
+                    <small class="form-text text-muted">Формат: ":443" для всех интерфейсов или "192.168.1.1:443" для конкретного IP</small>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Services Card -->
+    <div class="card mt-4">
+        <div class="card-status bg-blue"></div>
+        <div class="card-header">
+            <h3 class="card-title">Доступные сервисы</h3>
+            <div class="card-options">
+                <a href="#" class="btn btn-outline-secondary btn-sm ml-2 help-services"><i class="fe fe-help-circle"></i></a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                Выберите сервисы, которые вы хотите включить в мультиплексор. Нажмите на карточку сервиса, чтобы добавить или удалить его.
+            </div>
+            <div class="row" id="services-container">
+                <!-- Services will be populated here -->
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Загрузка...</span>
+                    </div>
+                    <p class="mt-2">Загрузка доступных сервисов...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rules Card -->
+    <div class="card mt-4">
+        <div class="card-status bg-teal"></div>
+        <div class="card-header">
+            <h3 class="card-title">Правила мультиплексирования</h3>
+            <div class="card-options">
+                <button type="button" class="btn btn-primary" id="add-rule-btn">
+                    <i class="fe fe-plus"></i> Добавить правило
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-outline table-vcenter card-table" id="rules-table">
+                    <thead>
+                        <tr>
+                            <th>Сервис</th>
+                            <th>Шаблон соответствия</th>
+                            <th>Перенаправление</th>
+                            <th width="150">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rules-body">
+                        <!-- Rules will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Raw YAML Card (Collapsed by default) -->
+    <div class="card mt-4">
+        <div class="card-status bg-secondary"></div>
+        <div class="card-header" data-toggle="collapse" data-target="#raw-yaml-content" aria-expanded="false">
+            <h3 class="card-title">Исходный YAML (для продвинутых пользователей)</h3>
+            <div class="card-options">
+                <a href="#" class="btn btn-outline-secondary btn-sm" data-toggle="collapse" data-target="#raw-yaml-content">
+                    <i class="fe fe-chevron-down"></i>
+                </a>
+            </div>
+        </div>
+        <div class="card-body collapse" id="raw-yaml-content">
+            <form action="/multiplexor/save" method="post">
+                <div class="form-group">
+                    <textarea name="config" id="raw-config" rows="15" class="form-control" placeholder="# YAML будет загружен автоматически"></textarea>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-secondary">Сохранить YAML</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Rule Edit Modal -->
+<div class="modal fade" id="rule-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rule-modal-title">Добавить правило</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="rule-form">
+                    <input type="hidden" id="rule-index" value="">
+                    <div class="form-group">
+                        <label for="rule-match" class="form-label">Шаблон соответствия</label>
+                        <input type="text" class="form-control" id="rule-match" placeholder="tls, ssh, vless, etc." required>
+                        <small class="form-text text-muted">Протокол или шаблон для определения типа соединения</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="rule-forward" class="form-label">Перенаправление</label>
+                        <input type="text" class="form-control" id="rule-forward" placeholder="hostname:port" required>
+                        <small class="form-text text-muted">Хост и порт для перенаправления трафика</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="save-rule-btn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/multiplexor/ui/services.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4/dist/js-yaml.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Load config, services and rules
+        loadConfig();
+        initializeServices();
+        loadRules();
+
+        // Listen form submit
+        $('#listen-form').on('submit', function(e) {
+            e.preventDefault();
+            const listen = $('#listen-port').val().trim();
+            if (!listen) {
+                alert('Пожалуйста, укажите порт для прослушивания');
+                return;
+            }
+            if (!isValidListen(listen)) {
+                alert('Неверный формат. Используйте host:port или :port');
+                return;
+            }
+
+            $.ajax({
+                url: '/multiplexor/api/listen',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ listen }),
+                success: function(response) {
+                    if (response.success) {
+                        showNotification('Порт успешно обновлен', 'success');
+                        loadConfig();
+                    } else {
+                        showNotification('Ошибка при обновлении порта', 'danger');
+                    }
+                },
+                error: function() {
+                    showNotification('Ошибка при обновлении порта', 'danger');
+                }
+            });
+        });
+
+        // Add rule button
+        $('#add-rule-btn').on('click', function() {
+            $('#rule-modal-title').text('Добавить правило');
+            $('#rule-index').val('');
+            $('#rule-match').val('');
+            $('#rule-forward').val('');
+
+            // Populate service select if services are loaded
+            if (window.multiplexorServices && window.multiplexorServices.services.length > 0) {
+                populateServiceSelect();
+            }
+
+            $('#rule-modal').modal('show');
+        });
+
+        // Service selection change
+        $(document).on('change', '#rule-service', function() {
+            const selectedOption = $(this).find('option:selected');
+            if (selectedOption.val()) {
+                $('#rule-match').val(selectedOption.data('match'));
+                $('#rule-forward').val(selectedOption.data('forward'));
+            }
+        });
+
+        // Save rule button
+        $('#save-rule-btn').on('click', function() {
+            const match = $('#rule-match').val().trim();
+            const forward = $('#rule-forward').val().trim();
+            const index = $('#rule-index').val();
+
+            if (!match || !forward) {
+                alert('Пожалуйста, заполните все поля');
+                return;
+            }
+            if (!isValidHostPort(forward)) {
+                alert('Некорректный формат перенаправления. Используйте host:port');
+                return;
+            }
+
+            if (index === '') {
+                // Add new rule
+                $.ajax({
+                    url: '/multiplexor/api/rules',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ match, forward }),
+                    success: function(response) {
+                        if (response.success) {
+                            $('#rule-modal').modal('hide');
+                            loadRules();
+                            loadConfig();
+                            showNotification('Правило успешно добавлено', 'success');
+                        } else {
+                            showNotification('Ошибка при добавлении правила', 'danger');
+                        }
+                    },
+                    error: function() {
+                        showNotification('Ошибка при добавлении правила', 'danger');
+                    }
+                });
+            } else {
+                // Update existing rule
+                $.ajax({
+                    url: '/multiplexor/api/rules/' + index,
+                    method: 'PUT',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ match, forward }),
+                    success: function(response) {
+                        if (response.success) {
+                            $('#rule-modal').modal('hide');
+                            loadRules();
+                            loadConfig();
+                            showNotification('Правило успешно обновлено', 'success');
+                        } else {
+                            showNotification('Ошибка при обновлении правила', 'danger');
+                        }
+                    },
+                    error: function() {
+                        showNotification('Ошибка при обновлении правила', 'danger');
+                    }
+                });
+            }
+        });
+
+        // Load config from server and populate form fields
+        function loadConfig() {
+            $.ajax({
+                url: '/multiplexor/api/config',
+                method: 'GET',
+                success: function(cfg) {
+                    if (cfg.listen) {
+                        $('#listen-port').val(cfg.listen);
+                    }
+                    if (typeof jsyaml !== 'undefined') {
+                        $('#raw-config').val(jsyaml.dump(cfg));
+                    }
+                },
+                error: function() {
+                    showNotification('Ошибка при загрузке конфигурации', 'danger');
+                }
+            });
+        }
+
+        // Проверка номера порта
+        function isValidPort(port) {
+            const num = parseInt(port, 10);
+            return Number.isInteger(num) && num > 0 && num <= 65535;
+        }
+
+        // Проверка строки формата host:port
+        function isValidHostPort(value) {
+            const match = value.match(/^([^:]+):(\d{1,5})$/);
+            return match && isValidPort(match[2]);
+        }
+
+        // Проверка строки формата host:port или :port
+        function isValidListen(value) {
+            const match = value.match(/^([^:]*):(\d{1,5})$/);
+            return match && isValidPort(match[2]);
+        }
+
+        // Initialize services
+        async function initializeServices() {
+            try {
+                await window.multiplexorServices.loadServices();
+                renderServiceCards();
+            } catch (error) {
+                console.error('Error initializing services:', error);
+                $('#services-container').html(`
+                    <div class="col-12">
+                        <div class="alert alert-danger">
+                            Ошибка при загрузке сервисов. Пожалуйста, обновите страницу.
+                        </div>
+                    </div>
+                `);
+            }
+        }
+
+        // Render service cards
+        function renderServiceCards() {
+            const servicesContainer = $('#services-container');
+            servicesContainer.empty();
+
+            // Get active services from current rules
+            $.ajax({
+                url: '/multiplexor/api/rules',
+                method: 'GET',
+                success: function(rules) {
+                    const activeMatches = rules.map(rule => rule.match);
+
+                    // Create service cards in a grid
+                    window.multiplexorServices.services.forEach(service => {
+                        const isActive = activeMatches.includes(service.match);
+                        const serviceCol = $('<div class="col-md-4 col-lg-3 mb-4"></div>');
+
+                        const card = $(`
+                            <div class="card ${isActive ? 'bg-primary text-white' : ''}" style="cursor: pointer;">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-center">
+                                        <span class="stamp stamp-md mr-3 ${isActive ? 'bg-white text-primary' : 'bg-primary'}">
+                                            <i class="${service.icon}"></i>
+                                        </span>
+                                        <div>
+                                            <h4 class="m-0">${service.name}</h4>
+                                            <small class="${isActive ? 'text-white' : 'text-muted'}">${service.description}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+
+                        card.on('click', function() {
+                            toggleService(service, !isActive);
+                        });
+
+                        serviceCol.append(card);
+                        servicesContainer.append(serviceCol);
+                    });
+                },
+                error: function() {
+                    showNotification('Ошибка при загрузке правил', 'danger');
+                }
+            });
+        }
+
+        // Toggle service (add/remove rule)
+        function toggleService(service, enable) {
+            if (enable) {
+                // Add rule for this service
+                $.ajax({
+                    url: '/multiplexor/api/rules',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        match: service.match,
+                        forward: service.defaultForward
+                    }),
+                    success: function(response) {
+                        if (response.success) {
+                            loadRules();
+                            renderServiceCards();
+                            loadConfig();
+                            showNotification(`Сервис ${service.name} успешно добавлен`, 'success');
+                        } else {
+                            showNotification('Ошибка при добавлении сервиса', 'danger');
+                        }
+                    },
+                    error: function() {
+                        showNotification('Ошибка при добавлении сервиса', 'danger');
+                    }
+                });
+            } else {
+                // Find and remove rule for this service
+                $.ajax({
+                    url: '/multiplexor/api/rules',
+                    method: 'GET',
+                    success: function(rules) {
+                        const ruleIndex = rules.findIndex(rule => rule.match === service.match);
+
+                        if (ruleIndex !== -1) {
+                            deleteRule(ruleIndex, function() {
+                                renderServiceCards();
+                                loadConfig();
+                                showNotification(`Сервис ${service.name} успешно удален`, 'success');
+                            });
+                        }
+                    },
+                    error: function() {
+                        showNotification('Ошибка при загрузке правил', 'danger');
+                    }
+                });
+            }
+        }
+
+        // Populate service select in modal
+        function populateServiceSelect() {
+            // Check if service select already exists
+            if ($('#rule-service').length === 0) {
+                // Create service select
+                const serviceGroup = $(`
+                    <div class="form-group">
+                        <label for="rule-service" class="form-label">Сервис</label>
+                        <select class="form-control" id="rule-service">
+                            <option value="">Выберите сервис или введите вручную...</option>
+                        </select>
+                        <small class="form-text text-muted">Выберите предопределенный сервис или введите параметры вручную</small>
+                    </div>
+                `);
+
+                // Insert before match input
+                $('#rule-form .form-group').first().before(serviceGroup);
+            }
+
+            // Populate options
+            const select = $('#rule-service');
+            select.find('option:not(:first)').remove();
+
+            window.multiplexorServices.services.forEach(service => {
+                const option = $(`<option value="${service.id}" data-match="${service.match}" data-forward="${service.defaultForward}">${service.name}</option>`);
+                select.append(option);
+            });
+
+            // Add custom option
+            select.append('<option value="custom">Пользовательское правило</option>');
+        }
+
+        // Function to load rules
+        function loadRules() {
+            $.ajax({
+                url: '/multiplexor/api/rules',
+                method: 'GET',
+                success: function(rules) {
+                    const tbody = $('#rules-body');
+                    tbody.empty();
+
+                    if (rules.length === 0) {
+                        tbody.append('<tr><td colspan="4" class="text-center">Нет правил</td></tr>');
+                        return;
+                    }
+
+                    rules.forEach(function(rule, index) {
+                        const row = $('<tr></tr>');
+
+                        // Service column
+                        const service = window.multiplexorServices.ruleToService(rule);
+                        row.append(`
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <span class="stamp stamp-sm mr-2 bg-primary">
+                                        <i class="${service.icon}"></i>
+                                    </span>
+                                    ${escapeHtml(service.name)}
+                                </div>
+                            </td>
+                        `);
+
+                        row.append('<td>' + escapeHtml(rule.match) + '</td>');
+                        row.append('<td>' + escapeHtml(rule.forward) + '</td>');
+
+                        const actions = $('<td></td>');
+                        const editBtn = $('<button class="btn btn-sm btn-primary mr-2"><i class="fe fe-edit"></i></button>');
+                        const deleteBtn = $('<button class="btn btn-sm btn-danger"><i class="fe fe-trash"></i></button>');
+
+                        editBtn.on('click', function() {
+                            editRule(index, rule);
+                        });
+
+                        deleteBtn.on('click', function() {
+                            deleteRule(index);
+                        });
+
+                        actions.append(editBtn);
+                        actions.append(deleteBtn);
+                        row.append(actions);
+
+                        tbody.append(row);
+                    });
+                },
+                error: function() {
+                    showNotification('Ошибка при загрузке правил', 'danger');
+                }
+            });
+        }
+
+        // Function to edit rule
+        function editRule(index, rule) {
+            $('#rule-modal-title').text('Редактировать правило');
+            $('#rule-index').val(index);
+            $('#rule-match').val(rule.match);
+            $('#rule-forward').val(rule.forward);
+
+            // Populate service select if services are loaded
+            if (window.multiplexorServices && window.multiplexorServices.services.length > 0) {
+                populateServiceSelect();
+
+                // Try to select the service
+                const service = window.multiplexorServices.getServiceByMatch(rule.match);
+                if (service) {
+                    $('#rule-service').val(service.id);
+                } else {
+                    $('#rule-service').val('custom');
+                }
+            }
+
+            $('#rule-modal').modal('show');
+        }
+
+        // Function to delete rule
+        function deleteRule(index, callback) {
+            const confirmDelete = callback ? true : confirm('Вы уверены, что хотите удалить это правило?');
+
+            if (confirmDelete) {
+                $.ajax({
+                    url: '/multiplexor/api/rules/' + index,
+                    method: 'DELETE',
+                    success: function(response) {
+                        if (response.success) {
+                            loadRules();
+                            loadConfig();
+                            if (typeof callback === 'function') {
+                                callback();
+                            } else {
+                                showNotification('Правило успешно удалено', 'success');
+                            }
+                        } else {
+                            showNotification('Ошибка при удалении правила', 'danger');
+                        }
+                    },
+                    error: function() {
+                        showNotification('Ошибка при удалении правила', 'danger');
+                    }
+                });
+            }
+        }
+
+        // Helper function to show notifications
+        function showNotification(message, type) {
+            $.notify({
+                message: message
+            }, {
+                type: type,
+                placement: {
+                    from: 'top',
+                    align: 'center'
+                },
+                z_index: 9999,
+                delay: 3000,
+                animate: {
+                    enter: 'animated fadeInDown',
+                    exit: 'animated fadeOutUp'
+                }
+            });
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    });
+</script>

@@ -477,7 +477,7 @@ module.exports = {
      *
      * @param model
      */
-    showAuditMeta: function (model) {
+        showAuditMeta: function (model) {
         if (Cache.User.isAdmin()) {
             require(['./main', './audit-log/meta'], function (App, View) {
                 App.UI.showModalDialog(new View({model: model}));
@@ -493,6 +493,36 @@ module.exports = {
         if (Cache.User.isAdmin()) {
             require(['./main', './settings/main'], (App, View) => {
                 controller.navigate('/settings');
+                App.UI.showAppContent(new View());
+            });
+        } else {
+            this.showDashboard();
+        }
+    },
+
+    /**
+     * Multiplexor
+     */
+    showMultiplexor: function () {
+        const controller = this;
+        if (Cache.User.isAdmin()) {
+            require(['./main', './multiplexor/main'], (App, View) => {
+                controller.navigate('/multiplexor');
+                App.UI.showAppContent(new View());
+            });
+        } else {
+            this.showDashboard();
+        }
+    },
+
+    /**
+     * Настройки внешних сервисов
+     */
+    showServices: function () {
+        const controller = this;
+        if (Cache.User.isAdmin()) {
+            require(['./main', './services/main'], (App, View) => {
+                controller.navigate('/services');
                 App.UI.showAppContent(new View());
             });
         } else {

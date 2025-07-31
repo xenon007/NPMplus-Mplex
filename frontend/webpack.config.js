@@ -80,8 +80,26 @@ module.exports = {
 					'sass-loader'
 				]
 			},
+
 			{
-				test: /.*tabler.*\.(jpe?g|gif|png|svg|eot|woff|ttf)$/,
+				test: /\.svg$/,
+				//type: 'asset/resource', // для Webpack 5
+				use: 'file-loader', // для Webpack 4
+			},
+			{
+				test: /\.(woff(2)?|eot|ttf|otf)$/,
+				use: [
+					{
+						loader: 'file-loader',
+						options: {
+							name: '[name].[ext]',
+							outputPath: 'fonts/'
+						}
+					}
+				]
+			},
+			{
+				test: /.*tabler.*\.(jpe?g|gif|png)$/,
 				use:  [
 					{
 						loader:  'file-loader',

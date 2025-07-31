@@ -1,6 +1,6 @@
 {
   "name": "npmplus",
-  "version": "0.0.0",
+  "version": "2.12.3",
   "description": "A beautiful interface for creating Nginx endpoints",
   "main": "js/index.js",
   "dependencies": {
@@ -34,13 +34,17 @@
     "style-loader": "4.0.0",
     "tabler-ui": "git+https://github.com/tabler/tabler.git#00f78ad823311bc3ad974ac3e5b0126198f0a813",
     "underscore": "1.13.7",
-    "webpack": "4.47.0",
+    "webpack": "4",
     "webpack-cli": "4.10.0",
     "webpack-visualizer-plugin": "0.1.11"
   },
   "scripts": {
     "build": "webpack --mode production"
   },
-  "author": "Jamie Curnow <jc@jc21.com> and ZoeyVid <zoeyvid@zvcdn.de>",
-  "license": "MIT"
+  "author": "Jamie Curnow <jc@jc21.com>, ZoeyVid <zoeyvid@zvcdn.de> and Vladislav 'Xenon007' Iaskin <vv@x07.it>",
+  "license": "MIT",
+  "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
+    "url-loader": "^4.1.1"
+  }
 }

@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:labs
-FROM --platform="$BUILDPLATFORM" alpine:3.22.0 AS frontend
+FROM --platform="$BUILDPLATFORM" node:20-alpine AS frontend
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 ARG NODE_ENV=production
-COPY frontend                        /app
+COPY frontend /app
 COPY global/certbot-dns-plugins.json /app/certbot-dns-plugins.json
 WORKDIR /app/frontend
 RUN apk upgrade --no-cache -a && \
@@ -15,8 +15,7 @@ COPY security.txt /app/dist/.well-known/security.txt
 
 FROM --platform="$BUILDPLATFORM" alpine:3.22.0 AS build-backend
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
-ARG NODE_ENV=production \
-    TARGETARCH
+ARG NODE_ENV=production TARGETARCH
 COPY backend                         /app
 COPY global/certbot-dns-plugins.json /app/certbot-dns-plugins.json
 WORKDIR /app
@@ -28,6 +27,8 @@ RUN apk upgrade --no-cache -a && \
     else yarn install; fi && \
     yarn cache clean && \
     clean-modules --yes
+
+
 FROM alpine:3.22.0 AS strip-backend
 COPY --from=build-backend /app /app
 RUN apk upgrade --no-cache -a && \
@@ -62,13 +63,14 @@ RUN apk upgrade --no-cache -a && \
     sed -i "s|APPSEC_PROCESS_TIMEOUT=.*|APPSEC_PROCESS_TIMEOUT=10000|g" /src/crowdsec-nginx-bouncer/lua-mod/config_example.conf
 
 
-FROM zoeyvid/nginx-quic:515-python
+FROM einherji/nginx-quic:515-python AS Nginx-Quic
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 ENV NODE_ENV=production
 ARG CRS_VER=v4.15.0
 
 COPY rootfs /
 COPY --from=strip-backend /app /app
+COPY services.json /app/services.json
 WORKDIR /app
 
 RUN apk upgrade --no-cache -a && \

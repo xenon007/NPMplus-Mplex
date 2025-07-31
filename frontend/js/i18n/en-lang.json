@@ -134,7 +134,7 @@
     "logged-in": "You are logged in as {name}",
     "sign-in-as": "Sign back in as {name}",
     "unknown-user": "Unknown User",
-    "version": "0.0.0",
+    "version": "2.12.3",
     "welcome": "Welcome to NPMplus"
   },
   "menu": {

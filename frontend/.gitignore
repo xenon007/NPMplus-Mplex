@@ -1,4 +1,4 @@
 dist
-node_modules
+node_nodules
 webpack_stats.html
 yarn-error.log

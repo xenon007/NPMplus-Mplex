@@ -134,7 +134,7 @@
     "logged-in": "您已以{name}身份登录",
     "sign-in-as": "以{name}身份重新登录",
     "unknown-user": "未知用户",
-    "version": "0.0.0",
+    "version": "2.12.3",
     "welcome": "欢迎使用NPMplus"
   },
   "menu": {

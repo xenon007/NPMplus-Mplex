@@ -26,6 +26,8 @@ app.enable('strict routing');
 app.use(require('./lib/express/jwt')());
 app.use('/', require('./routes/main'));
 
+app.use('/multiplexor', require('./routes/multiplexor'));
+
 // production error handler
 // no stacktraces leaked to user
 // eslint-disable-next-line
