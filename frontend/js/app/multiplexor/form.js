@@ -1,6 +1,6 @@
 const $ = require('jquery');
 // Загрузка менеджера сервисов мультиплексора
-require('../../../../mplex/shoes/services');
+require('./services');
 const services = window.multiplexorServices;
 
 /**
