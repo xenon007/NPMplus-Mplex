@@ -67,7 +67,6 @@ FROM einherji/nginx-quic:515-python AS Nginx-Quic
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 ENV NODE_ENV=production
 ARG CRS_VER=v4.15.0
-
 COPY rootfs /
 COPY --from=strip-backend /app /app
 COPY services.json /app/services.json

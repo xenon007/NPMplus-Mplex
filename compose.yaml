@@ -16,11 +16,11 @@ services:
 #    ipc: service:openappsec-agent # required when you want to use the openappsec attachment module
 #    privileged: true # required if you set NGINX_QUIC_BPF to true
     volumes:
-      - "/opt/npmplus:/data"
-      - "./multiplexor/config/config.yaml:/services/shoes.yaml" # файлы конфигурации сервисов для UI
-      - "./multiplexor/config/sslh.cfg:/services/sslh.cfg"
-      - "./multiplexor/config/protoplex.toml:/services/protoplex.toml"
-      - "./multiplexor/config/Caddyfile:/services/Caddyfile"
+      - "./opt/npmplus:/data"
+      - "./mplex/config/shoes.yaml:/services/shoes.yaml" # файлы конфигурации сервисов для UI
+      - "./mplex/config/sslh.cfg:/services/sslh.cfg"
+      - "./mplex/config/protoplex.toml:/services/protoplex.toml"
+      - "./mplex/config/Caddyfile:/services/Caddyfile"
 #      - "/var/www:/var/www" # optional, if you want to use NPMplus directly as webserver for html/php
 #      - "/path/to/old/npm/letsencrypt/folder:/etc/letsencrypt" # Only needed for first time migration from original nginx-proxy-manager to this fork, remove after migration
 #      - "shm-volume:/dev/shm/check-point" # required if you want to use the openappsec attachment module, also enable this volume at the end of this compose.yaml
@@ -116,35 +116,34 @@ services:
   shoes:
     image: einherji/shoes:0.1.7
     build:
-      context: multiplexor
+      context: mplex/shoes
     container_name: shoes
     restart: always
     volumes:
-      - "./multiplexor/config/config.yaml:/app/config.yaml"  # Общий том для конфигурации
+      - "./mplex/config/shoes.yaml:/app/config.yaml"  # Общий том для конфигурации
     environment:
       - "TZ=Europe/Moscow"  # Установите ваш часовой пояс
-    command: ["tail -f > /dev/null"]
-    # Используем host-сеть, чтобы shoes прослушивал порт 443 напрямую
-    network_mode: host
+    #command: ["tail -f > /dev/null"]
+    command: ["shoes config.yaml"]
 
 # This can be used to enable crowdsec, see README for a guide
-#  crowdsec:
-#    container_name: crowdsec
-#    image: docker.io/crowdsecurity/crowdsec:latest
-#    restart: always
-#    network_mode: bridge
-#    ports:
-#      - "127.0.0.1:7422:7422"
-#      - "127.0.0.1:8080:8080"
-#    environment:
-#      - "TZ=Europe/Moscow" # needs to be changed
-#      - "COLLECTIONS=ZoeyVid/npmplus"
-#    volumes:
-#      - "/opt/crowdsec/conf:/etc/crowdsec"
-#      - "/opt/crowdsec/data:/var/lib/crowdsec/data"
-#      - "/opt/npmplus/nginx:/opt/npmplus/nginx:ro"
-#      - "/opt/openappsec/logs:/opt/openappsec/logs:ro" # only uncomment if you also use the openappsec-agent container
-#      - "/opt/npmplus/services/crowdsec.yaml:/etc/crowdsec/config.yaml"
+  crowdsec:
+    container_name: crowdsec
+    image: docker.io/crowdsecurity/crowdsec:latest
+    restart: always
+    network_mode: bridge
+    ports:
+      - "127.0.0.1:7422:7422"
+      - "127.0.0.1:8080:8080"
+    environment:
+      - "TZ=Europe/Moscow" # needs to be changed
+      - "COLLECTIONS=ZoeyVid/npmplus"
+    volumes:
+      - "./opt/crowdsec/conf:/etc/crowdsec"
+      - "./opt/crowdsec/data:/var/lib/crowdsec/data"
+      - "./opt/npmplus/nginx:/opt/npmplus/nginx:ro"
+      - "./opt/openappsec/logs:/opt/openappsec/logs:ro" # only uncomment if you also use the openappsec-agent container
+      - "./opt/npmplus/services/crowdsec.yaml:/etc/crowdsec/config.yaml"
 
 # This can be used with GOA=true, to keep the geopip database updated, you need to change the envs to make it work
 #  geoipupdate:
