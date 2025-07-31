@@ -1,4 +1,4 @@
-_dist
-_node_nodules
+dist
+node_nodules
 webpack_stats.html
 yarn-error.log

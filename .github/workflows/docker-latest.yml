@@ -48,13 +48,13 @@ jobs:
           push: true
           tags: |
             xenon007/npmplus:latest
-            ghcr.io/xenon007/npmplus:latest
+            docker.io/xenon007/npmplus:latest
             xenon007/npmplus:${{ inputs.tag }}
-            ghcr.io/xenon007/npmplus:${{ inputs.tag }}
+            docker.io/xenon007/npmplus:${{ inputs.tag }}
             xenon007/npmplus:${{ github.run_number }}
-            ghcr.io/xenon007/npmplus:${{ github.run_number }}
+            docker.io/xenon007/npmplus:${{ github.run_number }}
             xenon007/nginx-proxy-manager:latest
-            ghcr.io/xenon007/nginx-proxy-manager:latest
+            docker.io/xenon007/nginx-proxy-manager:latest
       - name: Show Nginx version
         run: |
           docker run --rm --init --entrypoint nginx xenon007/npmplus:latest -V
