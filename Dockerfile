@@ -6,8 +6,8 @@ COPY frontend /app
 COPY global/certbot-dns-plugins.json /app/certbot-dns-plugins.json
 WORKDIR /app/frontend
 RUN apk upgrade --no-cache -a && \
-    apk add --no-cache ca-certificates nodejs yarn git python3 pythonispython3 py3-pip build-base && \
-    yarn install && \
+    apk add --no-cache ca-certificates nodejs yarn git python3 pythonispython3 py3-pip build-base
+RUN yarn install && \
     yarn build
 COPY darkmode.css /app/dist/css/darkmode.css
 COPY security.txt /app/dist/.well-known/security.txt

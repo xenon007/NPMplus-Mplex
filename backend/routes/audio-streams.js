@@ -1,4 +1,6 @@
 const express = require('express');
+// используем общий логгер для наглядности
+const logger  = require('../logger').audio;
 
 // Простая реализация API для аудио стримов
 // На данном этапе данные хранятся только в памяти
@@ -24,6 +26,11 @@ let streams = [
         },
 ];
 
+// вспомогательная функция для поиска потока по id
+function findStream(id) {
+        return streams.find((s) => s.id === id);
+}
+
 /**
  * /api/audio-streams
  */
@@ -32,6 +39,26 @@ router
         .get((req, res) => {
                 // Возвращаем все сохраненные потоки
                 res.status(200).send(streams);
+        })
+
+        // Создание нового аудио потока
+        .post(express.json(), (req, res) => {
+                const nextId = streams.length ? Math.max(...streams.map((s) => s.id)) + 1 : 1;
+                const body   = req.body || {};
+                const stream = {
+                        id:         nextId,
+                        name:       body.name || `Stream ${nextId}`,
+                        url:        body.url || '',
+                        format:     body.format || '',
+                        bitrate:    typeof body.bitrate === 'number' ? body.bitrate : 0,
+                        token_type: body.token_type || 'not_used',
+                        token:      body.token || '',
+                        token_mask: body.token_mask || '',
+                        buffer:     typeof body.buffer === 'number' ? body.buffer : 0,
+                };
+                streams.push(stream);
+                logger.info('Добавлен поток: %s', stream.name);
+                res.status(201).send(stream);
         });
 
 /**
@@ -59,5 +86,40 @@ router.post('/import', express.json(), (req, res) => {
 
         res.status(200).send(added);
 });
+
+// CRUD операции над конкретным потоком
+router
+        .route('/:id')
+        // Получить поток по ID
+        .get((req, res) => {
+                const id     = Number(req.params.id);
+                const stream = findStream(id);
+                if (!stream) {
+                        return res.sendStatus(404);
+                }
+                res.status(200).send(stream);
+        })
+        // Обновить поток
+        .put(express.json(), (req, res) => {
+                const id     = Number(req.params.id);
+                const stream = findStream(id);
+                if (!stream) {
+                        return res.sendStatus(404);
+                }
+                Object.assign(stream, req.body || {});
+                logger.info('Обновлен поток: %s', stream.name);
+                res.status(200).send(stream);
+        })
+        // Удалить поток
+        .delete((req, res) => {
+                const id = Number(req.params.id);
+                const idx = streams.findIndex((s) => s.id === id);
+                if (idx === -1) {
+                        return res.sendStatus(404);
+                }
+                const removed = streams.splice(idx, 1)[0];
+                logger.info('Удален поток: %s', removed.name);
+                res.sendStatus(204);
+        });
 
 module.exports = router;

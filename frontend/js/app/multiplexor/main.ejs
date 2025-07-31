@@ -318,14 +318,45 @@
         // Render service cards
         function renderServiceCards() {
             const servicesContainer = $('#services-container');
+
+            // Проверка, что контейнер существует
+            if (!servicesContainer.length) {
+                console.error('Контейнер #services-container не найден');
+                return;
+            }
+
             servicesContainer.empty();
 
-            // Get active services from current rules
+            // Получение активных сервисов из правил
             $.ajax({
                 url: '/multiplexor/api/rules',
                 method: 'GET',
                 success: function(rules) {
-                    const activeMatches = rules.map(rule => rule.match);
+                    // Проверка, что rules - это массив
+                    if (!Array.isArray(rules)) {
+                        console.error('Rules не является массивом:', rules);
+                        showNotification('Ошибка формата данных правил', 'danger');
+                        return;
+                    }
+
+                    // Извлечение activeMatches
+                    const activeMatches = rules.map(rule => rule.match).filter(match => match !== undefined);
+
+                    // Проверка, что сервисы существуют
+                    const services = window.multiplexorServices?.services;
+                    if (!Array.isArray(services) || !services.length) {
+                        console.error('Сервисы не найдены или пусты:', services);
+                        showNotification('Сервисы недоступны', 'danger');
+                        return;
+                    }
+
+                    // Создание карточек сервисов
+                    services.forEach(service => {
+                        // Проверка, что service и service.match определены
+                        if (!service || !service.match) {
+                            console.warn('Некорректный сервис:', service);
+                            return;
+                        }
 
                     // Create service cards in a grid
                     window.multiplexorServices.services.forEach(service => {
@@ -347,7 +378,14 @@
                                     </div>
                                 </div>
                             </div>
-                        `);
+                        </div>
+                    </div>
+                `);
+
+                        // Привязка события клика
+                        // Store service and active state in the card's data attributes to avoid reference errors
+                        card.data('service', service);
+                        card.data('active', serviceActive);
 
                         // store state on the element for later access in the handler
                         card.data('active', isActive);
@@ -364,7 +402,8 @@
                         servicesContainer.append(serviceCol);
                     });
                 },
-                error: function() {
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error('Ошибка загрузки правил:', textStatus, errorThrown);
                     showNotification('Ошибка при загрузке правил', 'danger');
                 }
             });

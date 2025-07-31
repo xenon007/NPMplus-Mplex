@@ -107,7 +107,6 @@ class MultiplexorServices {
                     </div>
                 </div>
             `;
-
             card.addEventListener('click', () => {
                 if (typeof onToggle === 'function') {
                     const nextState = card.dataset.active !== 'true';
