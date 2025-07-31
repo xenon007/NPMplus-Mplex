@@ -51,6 +51,7 @@ services:
       - "GOA_LISTEN_LOCALHOST=false" # Binds goaccess only to localhost, overrides NPM_IPV4_BINDING/NPM_IPV6_BINDING, default false
 #      - "DEFAULT_CERT_ID=1" # ID of cert, which should be used instead of dummycerts, default 0/unset/dummycerts
       - "HTTP_PORT=8888" # tcp port to use for http traffic, changing this may breaks certbot http challenge, default 80
+      - "MULTIPLEXPOR_NAME=shoes" # имя мультиплексора для управления
       - "HTTPS_PORT=8443" # udp and tcp port to use for https traffic, changing this may breaks certbot http challenge, default 443
 #      - "HTTP3_ALT_SVC_PORT=8443" # please change this if the udp port the clients connect to is not 443, default 443
 #      - "DISABLE_HTTP=true" # disables nginx to listen on port 80, default false
