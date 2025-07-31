@@ -84,21 +84,21 @@ class MultiplexorServices {
         container.innerHTML = '';
 
         this.services.forEach(service => {
-            const isActive = activeServices.includes(service.id);
+            const serviceActive = activeServices.includes(service.id);
 
             const card = document.createElement('div');
-            card.className = `card ${isActive ? 'bg-primary text-white' : ''}`;
+            card.className = `card ${serviceActive ? 'bg-primary text-white' : ''}`;
             card.style.cursor = 'pointer';
 
             card.innerHTML = `
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center">
-                        <span class="stamp stamp-md mr-3 ${isActive ? 'bg-white text-primary' : 'bg-primary'}">
+                        <span class="stamp stamp-md mr-3 ${serviceActive ? 'bg-white text-primary' : 'bg-primary'}">
                             <i class="${service.icon}"></i>
                         </span>
                         <div>
                             <h4 class="m-0">${service.name}</h4>
-                            <small class="${isActive ? 'text-white' : 'text-muted'}">${service.description}</small>
+                            <small class="${serviceActive ? 'text-white' : 'text-muted'}">${service.description}</small>
                         </div>
                     </div>
                 </div>
@@ -106,7 +106,7 @@ class MultiplexorServices {
 
             card.addEventListener('click', () => {
                 if (typeof onToggle === 'function') {
-                    onToggle(service, !isActive);
+                    onToggle(service, !serviceActive);
                 }
             });
 
