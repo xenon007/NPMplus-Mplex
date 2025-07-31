@@ -62,8 +62,8 @@ jobs:
           platforms: linux/amd64,linux/arm64 
           push: true
           tags: |
-            zoeyvid/npmplus:${{ github.ref_name }}
-            ghcr.io/zoeyvid/npmplus:${{ github.ref_name }}
+            xenon007/npmplus:${{ github.ref_name }}
+            ghcr.io/xenon007/npmplus:${{ github.ref_name }}
       - name: show version
         if: ${{ github.event_name != 'pull_request' }}
         run: |
@@ -82,11 +82,11 @@ jobs:
           tags: ghcr.io/zoeyvid/npmplus:${{ steps.pr.outputs.pr }}
       - name: show version (PR)
         if: ${{ github.event_name == 'pull_request' }}
-        run: docker run --rm --entrypoint nginx ghcr.io/zoeyvid/npmplus:${{ steps.pr.outputs.pr }} -V
+        run: docker run --rm --entrypoint nginx ghcr.io/xenon007/npmplus:${{ steps.pr.outputs.pr }} -V
       - name: add comment (PR)
         uses: mshick/add-pr-comment@v2
         if: ${{ github.event_name == 'pull_request' }}
         with:
-          message: "The Docker Image can now be found here: `ghcr.io/zoeyvid/npmplus:${{ steps.pr.outputs.pr }}`"
+          message: "The Docker Image can now be found here: `ghcr.io/xenon007/npmplus:${{ steps.pr.outputs.pr }}`"
           repo-token: ${{ github.token }}
           refresh-message-position: true
