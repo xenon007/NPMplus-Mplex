@@ -13,4 +13,5 @@ module.exports = {
         ip_ranges: new Signale({ scope: 'IP Ranges' }),
         oidc: new Signale({ scope: 'OIDC     ' }),
         audio: new Signale({ scope: 'Audio    ' }),
+        mikrotik: new Signale({ scope: 'Mikrotik ' }),
 };

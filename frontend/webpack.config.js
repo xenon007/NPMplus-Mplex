@@ -8,8 +8,9 @@ const PACKAGE              = require('./package.json');
 
 module.exports = {
 	entry:     {
-		main:  './js/index.js',
-		login: './js/login.js'
+                main:  './js/index.js',
+                login: './js/login.js',
+                mikrotik: './js/mikrotik.js'
 	},
 	output:    {
 		path:          path.resolve(__dirname, 'dist'),
@@ -137,14 +138,22 @@ module.exports = {
 				version: PACKAGE.version
 			}
 		}),
-		new HtmlWebpackPlugin({
-			template:           '!!ejs-webpack-loader!html/login.ejs',
-			filename:           'login.html',
-			inject:             false,
-			templateParameters: {
-				version: PACKAGE.version
-			}
-		}),
+                new HtmlWebpackPlugin({
+                        template:           '!!ejs-webpack-loader!html/login.ejs',
+                        filename:           'login.html',
+                        inject:             false,
+                        templateParameters: {
+                                version: PACKAGE.version
+                        }
+                }),
+                new HtmlWebpackPlugin({
+                        template:           '!!ejs-webpack-loader!html/mikrotik.ejs',
+                        filename:           'mikrotik.html',
+                        inject:             false,
+                        templateParameters: {
+                                version: PACKAGE.version
+                        }
+                }),
 		new MiniCssExtractPlugin({
 			filename:      'css/[name].css',
 			chunkFilename: 'css/[id].css'

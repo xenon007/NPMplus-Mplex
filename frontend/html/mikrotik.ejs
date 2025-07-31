@@ -1,0 +1,46 @@
+<% var title = 'Mikrotik – NPMplus' %>
+<%- include partials/header.ejs %>
+
+<div class="page" id="mikrotik" data-version="<%= version %>">
+        <div class="container">
+                <h2>Mikrotik</h2>
+                <form id="creds-form">
+                        <div class="mb-3">
+                                <label class="form-label">Host</label>
+                                <input type="text" id="host" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Пользователь</label>
+                                <input type="text" id="user" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Пароль</label>
+                                <input type="password" id="pass" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">SSL</label>
+                                <input type="checkbox" id="ssl" />
+                        </div>
+                        <button type="button" id="save" class="btn btn-primary">Сохранить</button>
+                </form>
+                <hr />
+                <form id="container-form">
+                        <div class="mb-3">
+                                <label class="form-label">Имя контейнера</label>
+                                <input type="text" id="cname" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Интерфейс</label>
+                                <input type="text" id="iface" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Порты</label>
+                                <input type="text" id="ports" class="form-control" placeholder="8080:80" />
+                        </div>
+                        <button type="button" id="create" class="btn btn-success">Создать контейнер</button>
+                </form>
+        </div>
+</div>
+
+<script type="text/javascript" src="/js/mikrotik.bundle.js?v=<%= version %>"></script>
+<%- include partials/footer.ejs %>
