@@ -1,7 +1,8 @@
 const $ = require('jquery');
 
-// Храним ссылки на элементы формы правил, чтобы проще собирать данные
+// Храним ссылки на элементы формы правил и контейнер с правилами
 const ruleMap = [];
+let $rules;
 
 /**
  * Добавляет строку для правила в форму
@@ -13,7 +14,7 @@ function addRuleRow(match = '', forward = '') {
     row.append(`<div class="col"><input type="text" class="form-control rule-match" placeholder="match" value="${match}" /></div>`);
     row.append(`<div class="col"><input type="text" class="form-control rule-forward" placeholder="forward" value="${forward}" /></div>`);
     row.append('<div class="col-auto"><button type="button" class="btn btn-danger remove-rule">&times;</button></div>');
-    $('#rules').append(row);
+    $rules.append(row);
 
     // Сохраняем ссылку на элементы для последующего чтения/удаления
     ruleMap.push({
@@ -21,28 +22,42 @@ function addRuleRow(match = '', forward = '') {
         matchInput: row.find('.rule-match'),
         forwardInput: row.find('.rule-forward')
     });
+
+    console.debug('Rule row added', { match, forward });
 }
 
 /**
  * Инициализация страницы мультиплексора
+ * @param {HTMLElement} rootEl корневой DOM-элемент представления
  */
-module.exports = function initForm() {
+module.exports = function initForm(rootEl) {
+    const $root = $(rootEl);
+    const $form = $root.find('#mplex-form');
+    const $listen = $root.find('#listen');
+    $rules = $root.find('#rules');
+    const $addRule = $root.find('#add-rule');
+
     // Загрузка текущей конфигурации
     function loadConfig() {
         $.get('/multiplexor/api/config', cfg => {
             console.debug('Loaded config', cfg);
-            $('#listen').val(cfg.listen || '');
-            $('#rules').empty();
+            $listen.val(cfg.listen || '');
+            $rules.empty();
             ruleMap.length = 0; // сбрасываем локальный массив
-            (cfg.rules || []).forEach(rule => addRuleRow(rule.match, rule.forward));
+            if (cfg.rules && cfg.rules.length) {
+                cfg.rules.forEach(rule => addRuleRow(rule.match, rule.forward));
+            } else {
+                // Добавляем пустое правило по умолчанию
+                addRuleRow();
+            }
         });
     }
 
     // Сбор данных формы и отправка на сервер
-    $('#mplex-form').on('submit', function (e) {
+    $form.on('submit', function (e) {
         e.preventDefault();
         const config = {
-            listen: $('#listen').val().trim(),
+            listen: $listen.val().trim(),
             rules: []
         };
 
@@ -66,8 +81,8 @@ module.exports = function initForm() {
     });
 
     // Добавление/удаление правил
-    $('#add-rule').on('click', () => addRuleRow());
-    $('#rules').on('click', '.remove-rule', function () {
+    $addRule.on('click', () => addRuleRow());
+    $rules.on('click', '.remove-rule', function () {
         const row = $(this).closest('.rule-row');
         // Удаляем из DOM и из локального массива
         const idx = ruleMap.findIndex(r => r.row.is(row));
@@ -75,7 +90,9 @@ module.exports = function initForm() {
             ruleMap.splice(idx, 1);
         }
         row.remove();
+        console.debug('Rule row removed', { index: idx });
     });
 
     loadConfig();
 };
+

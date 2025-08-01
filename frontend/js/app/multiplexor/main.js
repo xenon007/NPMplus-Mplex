@@ -7,6 +7,6 @@ module.exports = Mn.View.extend({
     template: template,
     onRender: function () {
         // Инициализация формы после отображения шаблона
-        initForm();
+        initForm(this.el);
     }
 });
