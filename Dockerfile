@@ -40,12 +40,15 @@ FROM --platform="$BUILDPLATFORM" alpine:3.22.0 AS crowdsec
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 ARG CSNB_VER=v1.1.2
 WORKDIR /src
+COPY /bin/cs-mikrotik-bouncer-alt /src
 RUN apk upgrade --no-cache -a && \
     apk add --no-cache ca-certificates git build-base && \
     git clone --recursive https://github.com/crowdsecurity/cs-nginx-bouncer --branch "$CSNB_VER" /src && \
     make && \
     tar xzf crowdsec-nginx-bouncer.tgz && \
-    mv crowdsec-nginx-bouncer-* crowdsec-nginx-bouncer && \
+    mv crowdsec-nginx-bouncer-* crowdsec-nginx-bouncer  &&  \
+    mkdir -p /var/run/ko && \
+    chmod +x /src/cs-mikrotik-bouncer-alt/cs-mikrotik-bouncer-alt && \
     sed -i "/lua_package_path/d" /src/crowdsec-nginx-bouncer/nginx/crowdsec_nginx.conf && \
     sed -i "/lua_ssl_trusted_certificate/d" /src/crowdsec-nginx-bouncer/nginx/crowdsec_nginx.conf && \
     sed -i "s|/etc/crowdsec/bouncers/crowdsec-nginx-bouncer.conf|/data/crowdsec/crowdsec.conf|g" /src/crowdsec-nginx-bouncer/nginx/crowdsec_nginx.conf && \
@@ -60,8 +63,7 @@ RUN apk upgrade --no-cache -a && \
     sed -i "s|REQUEST_TIMEOUT=.*|REQUEST_TIMEOUT=2500|g" /src/crowdsec-nginx-bouncer/lua-mod/config_example.conf && \
     sed -i "s|APPSEC_CONNECT_TIMEOUT=.*|APPSEC_CONNECT_TIMEOUT=1000|g" /src/crowdsec-nginx-bouncer/lua-mod/config_example.conf && \
     sed -i "s|APPSEC_SEND_TIMEOUT=.*|APPSEC_SEND_TIMEOUT=30000|g" /src/crowdsec-nginx-bouncer/lua-mod/config_example.conf && \
-    sed -i "s|APPSEC_PROCESS_TIMEOUT=.*|APPSEC_PROCESS_TIMEOUT=10000|g" /src/crowdsec-nginx-bouncer/lua-mod/config_example.conf
-
+    sed -i "s|APPSEC_PROCESS_TIMEOUT=.*|APPSEC_PROCESS_TIMEOUT=10000|g" /src/crowdsec-nginx-bouncer/lua-mod/config_example.conf \
 
 FROM einherji/nginx-quic:515-python AS Nginx-Quic
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]

@@ -1,4 +1,4 @@
-# NPM++
+# NPM+
 
 NPM plus plus it's a fork of NPMPlus project with aditional web UI for easy administration without text files edition.
 Caddy server homepage: https://caddyserver.com
