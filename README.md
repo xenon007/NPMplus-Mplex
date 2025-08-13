@@ -158,6 +158,7 @@ labels:
 8. use the output of step 5 as `API_KEY`
 9. save the file
 10. redeploy the `compose.yaml`
+11. Для блокировки подозрительных подключений на MikroTik можно добавить контейнер [cs-mikrotik-bouncer-alt](https://github.com/nvtkaszpir/cs-mikrotik-bouncer-alt). Пример конфигурации приведён в `compose.yaml`, в переменной `CROWDSEC_BOUNCER_API_KEY` указывается ключ из шага 5.
 
 # coreruleset plugins
 1. Download the plugin (all files inside the `plugins` folder of the git repo), most time: `<plugin-name>-before.conf`, `<plugin-name>-config.conf` and `<plugin-name>-after.conf` and sometimes `<plugin-name>.data` and/or `<plugin-name>.lua` or somilar files
