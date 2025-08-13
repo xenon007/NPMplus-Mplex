@@ -5,6 +5,11 @@
     "config": "/services/crowdsec.yaml"
   },
   {
+    "id": "mikrotik-bouncer",
+    "name": "MikroTik Bouncer",
+    "config": "/services/mikrotik-bouncer.env"
+  },
+  {
     "id": "caddy",
     "name": "Caddy Redirect",
     "config": "/services/Caddyfile"

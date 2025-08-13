@@ -146,6 +146,20 @@ services:
 #      - "./opt/openappsec/logs:/opt/openappsec/logs:ro" # only uncomment if you also use the openappsec-agent container
 #      #- "./opt/npmplus/services/crowdsec.yaml:/etc/crowdsec/config.yaml"
 
+# This optional bouncer передаёт решения CrowdSec в MikroTik для блокировки IP
+#  mikrotik-bouncer:
+#    image: ghcr.io/nvtkaszpir/cs-mikrotik-bouncer-alt:latest
+#    container_name: mikrotik-bouncer
+#    restart: always
+#    environment:
+#      - "TZ=Europe/Moscow" # needs to be changed
+#      - "CROWDSEC_BOUNCER_API_KEY=<api-key>" # ключ из cscli bouncers add
+#      - "CROWDSEC_URL=http://crowdsec:8080/"
+#      - "MIKROTIK_HOST=192.168.88.1:8728" # адрес и порт роутера
+#      - "MIKROTIK_USER=crowdsec-bouncer-user"
+#      - "MIKROTIK_PASS=<password>"
+#      - "MIKROTIK_TLS=false"
+
 # This can be used with GOA=true, to keep the geopip database updated, you need to change the envs to make it work
 #  geoipupdate:
 #    container_name: npmplus-geoipupdate
