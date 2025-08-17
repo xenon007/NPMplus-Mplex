@@ -1,7 +1,7 @@
 services:
   npmplus:
     container_name: npmplus
-    image: docker.io/einherji/npmplus:latest # or ghcr.io/zoeyvid/npmplus:latest
+    image: einherji/npmplus:latest # or ghcr.io/zoeyvid/npmplus:latest
     build:
       context: .
     restart: always
@@ -12,7 +12,7 @@ services:
       - 8888:8888
       - 8383:8383
       - 8443:8443
-#    ipc: service:openappsec-agent # required when you want to use the openappsec attachment module
+#    ipc: service:openappsec-agent d# required when you want to use the openappsec attachment module
 #    privileged: true # required if you set NGINX_QUIC_BPF to true
     volumes:
       - "./opt/npmplus:/data"
@@ -114,51 +114,51 @@ services:
 # - https://github.com/cfal/shoes/blob/master/examples/tls_sni_vmess_and_snell.yaml
 
 # Отдельный контейнер для мультиплексора shoes
-#  shoes:
-#    image: einherji/shoes:0.1.7
-#    build:
-#      context: mplex/shoes
-#    container_name: shoes
-#    #restart: always
-#    #volumes:
-#    #  - "./mplex/config/shoes.yaml:/app/config.yaml"  # Общий том для конфигурации
-#    environment:
-#      - "TZ=Europe/Moscow"  # Установите ваш часовой пояс
-#    #command: ["tail -f > /dev/null"]
-#    #command: ["shoes config.yaml"]
+  shoes:
+    image: einherji/shoes:latest
+    build:
+      context: mplex/shoes
+    container_name: shoes
+    #restart: always
+    #volumes:
+    #  - "./mplex/config/shoes.yaml:/app/config.yaml"  # Общий том для конфигурации
+    environment:
+      - "TZ=Europe/Moscow"  # Установите ваш часовой пояс
+    #command: ["tail -f > /dev/null"]
+    #command: ["shoes config.yaml"]
 
 # This can be used to enable crowdsec, see README for a guide
-#  crowdsec:
-#    container_name: crowdsec
-#    image: docker.io/crowdsecurity/crowdsec:latest
-#    restart: always
-#    network_mode: bridge
-#    ports:
-#      - "127.0.0.1:7422:7422"
-#      - "127.0.0.1:8080:8080"
-#    environment:
-#      - "TZ=Europe/Moscow" # needs to be changed
-#      - "COLLECTIONS=ZoeyVid/npmplus"
-#    volumes:
-#      - "./opt/crowdsec/conf:/etc/crowdsec"
-#      - "./opt/crowdsec/data:/var/lib/crowdsec/data"
-#      - "./opt/npmplus/nginx:/opt/npmplus/nginx:ro"
-#      - "./opt/openappsec/logs:/opt/openappsec/logs:ro" # only uncomment if you also use the openappsec-agent container
-#      #- "./opt/npmplus/services/crowdsec.yaml:/etc/crowdsec/config.yaml"
+  crowdsec:
+    container_name: crowdsec
+    image: docker.io/crowdsecurity/crowdsec:latest
+    restart: always
+    network_mode: bridge
+    ports:
+      - "127.0.0.1:7422:7422"
+      - "127.0.0.1:8080:8080"
+    environment:
+      - "TZ=Europe/Moscow" # needs to be changed
+      - "COLLECTIONS=ZoeyVid/npmplus"
+    volumes:
+      - "./opt/crowdsec/conf:/etc/crowdsec"
+      - "./opt/crowdsec/data:/var/lib/crowdsec/data"
+      - "./opt/npmplus/nginx:/opt/npmplus/nginx:ro"
+      - "./opt/openappsec/logs:/opt/openappsec/logs:ro" # only uncomment if you also use the openappsec-agent container
+      #- "./opt/npmplus/services/crowdsec.yaml:/etc/crowdsec/config.yaml"
 
 # This optional bouncer передаёт решения CrowdSec в MikroTik для блокировки IP
-#  mikrotik-bouncer:
-#    image: ghcr.io/nvtkaszpir/cs-mikrotik-bouncer-alt:latest
-#    container_name: mikrotik-bouncer
-#    restart: always
-#    environment:
-#      - "TZ=Europe/Moscow" # needs to be changed
-#      - "CROWDSEC_BOUNCER_API_KEY=<api-key>" # ключ из cscli bouncers add
-#      - "CROWDSEC_URL=http://crowdsec:8080/"
-#      - "MIKROTIK_HOST=192.168.88.1:8728" # адрес и порт роутера
-#      - "MIKROTIK_USER=crowdsec-bouncer-user"
-#      - "MIKROTIK_PASS=<password>"
-#      - "MIKROTIK_TLS=false"
+  mikrotik-bouncer:
+    image: quay.io/kaszpir/cs-mikrotik-bouncer-alt:v0.8.0
+    container_name: mikrotik-bouncer
+    restart: always
+    environment:
+      - "TZ=Europe/Moscow" # needs to be changed
+      - "CROWDSEC_BOUNCER_API_KEY=<api-key>" # ключ из cscli bouncers add
+      - "CROWDSEC_URL=http://crowdsec:8080/"
+      - "MIKROTIK_HOST=192.168.88.1:8728" # адрес и порт роутера
+      - "MIKROTIK_USER=crowdsec-bouncer-user"
+      - "MIKROTIK_PASS=<password>"
+      - "MIKROTIK_TLS=false"
 
 # This can be used with GOA=true, to keep the geopip database updated, you need to change the envs to make it work
 #  geoipupdate:
@@ -246,38 +246,31 @@ services:
 #      - "/opt/openappsec/pgdb:/var/lib/postgresql/data"
 
 # This can be used with DISABLE_HTTP=true, to force HTTPS redirects for every host
-#  npmplus-caddy:
-#    container_name: npmplus-caddy
-#    image: docker.io/einherji/npmplus:caddy
-#    restart: always
-#    network_mode: bridge
-#    ports:
-#      - "80:80"
-#    environment:
-#      - "TZ=Europe/Moscow"
-#    volumes:
-#      - "/opt/npmplus/services/Caddyfile:/etc/caddy/Caddyfile"
+  npmplus-caddy:
+    container_name: npmplus-caddy
+    image: docker.io/einherji/npmplus:caddy
+    restart: always
+    network_mode: bridge
+    ports:
+      - "80:80"
+    environment:
+      - "TZ=Europe/Moscow"
+    volumes:
+      - "/opt/npmplus/services/Caddyfile:/etc/caddy/Caddyfile"
 
-#  shoes:
-#    container_name: shoes
-#    image: docker.io/einherji/shoes:0.1.7
-#    restart: always
-#    volumes:
-#      - "/opt/npmplus/services/shoes.conf:/etc/shoes.conf"
+  protoplex:
+    container_name: protoplex
+    image: einherji/protoplex:latest
+    restart: always
+    volumes:
+      - "/opt/npmplus/services/protoplex.toml:/etc/protoplex.toml"
 
-#  protoplex:
-#    container_name: protoplex
-#    image: einherji/protoplex:latest
-#    restart: always
-#    volumes:
-#      - "/opt/npmplus/services/protoplex.toml:/etc/protoplex.toml"
-
-#  sslh:
-#    container_name: sslh
-#    image: einherji/sslh:latest
-#    restart: always
-#    volumes:
-#      - "/opt/npmplus/services/sslh.cfg:/etc/sslh.cfg"
+  sslh:
+    container_name: sslh
+    image: einherji/sslh:latest
+    restart: always
+    volumes:
+      - "/opt/npmplus/services/sslh.cfg:/etc/sslh.cfg"
 
 # volumes:
 #   shm-volume:
