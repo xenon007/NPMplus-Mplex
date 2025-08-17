@@ -1,4 +1,4 @@
-# NPM++
+# NPM+
 
 NPM plus plus it's a fork of NPMPlus project with aditional web UI for easy administration without text files edition.
 Caddy server homepage: https://caddyserver.com
@@ -74,6 +74,21 @@ so that the barrier for entry here is low.
 - fixed smaller issues/bugs
 - other small changes/improvements
 
+- Mikrotik integration for managing interfaces, containers and firewall
+
+## Mikrotik integration
+
+Environment variables used to connect to the router:
+
+- `MIKROTIK_HOST` – router address
+- `MIKROTIK_PORT` – API port (default 8728)
+- `MIKROTIK_USER` – username
+- `MIKROTIK_PASS` – password
+- `MIKROTIK_SSL` – set to `true` to use API-SSL
+- `MIKROTIK_SSH_PORT` – SSH port (default 22)
+
+Passwords, certificates and keys provided in the settings page are stored in `/data/mikrotik`.
+
 ## migration
 - **NOTE: migrating back to the original is not possible**, so make first a **backup** before migration, so you can use the backup to switch back
 - please delete all certs using dnspod as dns provider and recreate them after migration, since the certbot plugin used was replaced
@@ -143,6 +158,7 @@ labels:
 8. use the output of step 5 as `API_KEY`
 9. save the file
 10. redeploy the `compose.yaml`
+11. Для блокировки подозрительных подключений на MikroTik можно добавить контейнер [cs-mikrotik-bouncer-alt](https://github.com/nvtkaszpir/cs-mikrotik-bouncer-alt). Пример конфигурации приведён в `compose.yaml`, в переменной `CROWDSEC_BOUNCER_API_KEY` указывается ключ из шага 5.
 
 # coreruleset plugins
 1. Download the plugin (all files inside the `plugins` folder of the git repo), most time: `<plugin-name>-before.conf`, `<plugin-name>-config.conf` and `<plugin-name>-after.conf` and sometimes `<plugin-name>.data` and/or `<plugin-name>.lua` or somilar files

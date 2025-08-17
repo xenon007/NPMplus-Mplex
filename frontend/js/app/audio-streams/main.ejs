@@ -1,0 +1,46 @@
+<!-- <div class="page-header">
+    <h1 class="page-title"><%- i18n('audio-streams', 'title') %></h1>
+</div> -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title"><%- i18n('audio-streams', 'title') %></h3>
+        <div class="card-options">
+            <a href="#" class="btn btn-outline-primary btn-sm mr-2 add-stream">
+                <i class="fe fe-plus"></i> <%- i18n('audio-streams', 'add') %>
+            </a>
+            <a href="#" class="btn btn-outline-secondary btn-sm import-streams">
+                <i class="fe fe-upload"></i> <%- i18n('audio-streams', 'import') %>
+            </a>
+            <a href="#" class="btn btn-outline-primary btn-sm mr-2 save-m3u">
+                <i class="fe fe-download"></i> <%- i18n('audio-streams', 'save-m3u') %>
+            </a>
+            <a href="#" class="btn btn-outline-primary btn-sm save-pls">
+                <i class="fe fe-download"></i> <%- i18n('audio-streams', 'save-pls') %>
+            </a>
+            <select class="form-control form-control-sm domain-select mr-2" style="max-width: 170px;"></select>
+            <a href="#" class="btn btn-outline-primary btn-sm save-domain" title="<%- i18n('str','save') %>">
+                <i class="fe fe-save"></i>
+            </a>
+            <input type="file" class="d-none import-file" id="import-playlist" accept=".m3u,.m3u8,.pls">
+        </div>
+    </div>
+    <div class="card-body no-padding min-100">
+        <div class="dimmer">
+            <div class="loader"></div>
+            <div class="dimmer-content list-region">
+                <table id="table" class="table table-hover table-outline table-vcenter card-table">
+                    <thead>
+                        <tr>
+                            <th><%- i18n('str','source') %></th>
+                            <th><%- i18n('str','category') %></th>
+                            <th><%- i18n('str','destination') %></th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audio-stream-list"></tbody>
+                </table>
+            </div>
+        </div>
+        <audio id="audio-player" class="w-100 mt-3" controls></audio>
+    </div>
+</div>

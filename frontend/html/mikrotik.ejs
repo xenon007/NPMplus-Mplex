@@ -1,0 +1,117 @@
+<% var title = 'Mikrotik – NPMplus' %>
+<%- include partials/header.ejs %>
+
+<div class="page" id="mikrotik" data-version="<%= version %>">
+        <div class="container">
+                <h2>Mikrotik</h2>
+                <form id="creds-form">
+                        <div class="mb-3">
+                                <label class="form-label">Host</label>
+                                <input type="text" id="host" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Пользователь</label>
+                                <input type="text" id="user" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Пароль</label>
+                                <input type="password" id="pass" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">SSL</label>
+                                <input type="checkbox" id="ssl" />
+                        </div>
+                        <button type="button" id="save" class="btn btn-primary">Сохранить</button>
+                </form>
+                <hr />
+                <form id="container-form">
+                        <div class="mb-3">
+                                <label class="form-label">Имя контейнера</label>
+                                <input type="text" id="cname" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Интерфейс</label>
+                                <input type="text" id="iface" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Envlist</label>
+                                <input type="text" id="envlist" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Тома (через запятую)</label>
+                                <input type="text" id="mounts" class="form-control" placeholder="data1,data2" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Порты</label>
+                                <input type="text" id="ports" class="form-control" placeholder="8080:80" />
+                        </div>
+                        <button type="button" id="create" class="btn btn-success">Создать контейнер</button>
+                </form>
+
+                <hr />
+                <h3>Envlist</h3>
+                <form id="env-form">
+                        <div class="mb-3">
+                                <label class="form-label">Имя envlist</label>
+                                <input type="text" id="env-name" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Переменные (key=value, по одной в строке)</label>
+                                <textarea id="env-vars" class="form-control"></textarea>
+                        </div>
+                        <button type="button" id="env-save" class="btn btn-secondary">Сохранить envlist</button>
+                </form>
+
+                <hr />
+                <h3>Том</h3>
+                <form id="volume-form">
+                        <div class="mb-3">
+                                <label class="form-label">Имя</label>
+                                <input type="text" id="vol-name" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Источник</label>
+                                <input type="text" id="vol-src" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Папка в контейнере</label>
+                                <input type="text" id="vol-dst" class="form-control" />
+                        </div>
+                        <button type="button" id="vol-create" class="btn btn-secondary">Создать том</button>
+                </form>
+
+                <hr />
+                <h3>VETH интерфейс</h3>
+                <form id="veth-form">
+                        <div class="mb-3">
+                                <label class="form-label">Имя</label>
+                                <input type="text" id="veth-name" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">IP адрес/маска</label>
+                                <input type="text" id="veth-addr" class="form-control" placeholder="192.168.1.2/24" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Interface List</label>
+                                <input type="text" id="veth-list" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                                <label class="form-label">Bridge</label>
+                                <input type="text" id="veth-bridge" class="form-control" />
+                        </div>
+                        <button type="button" id="veth-create" class="btn btn-secondary">Создать veth</button>
+                </form>
+
+                <hr />
+                <h3>Firewall</h3>
+                <button type="button" id="fw-show" class="btn btn-secondary">Показать правила</button>
+                <div class="mb-3 mt-3">
+                        <label class="form-label">Новое правило (JSON)</label>
+                        <textarea id="fw-rule" class="form-control" placeholder='{"chain":"input"}'></textarea>
+                </div>
+                <button type="button" id="fw-add" class="btn btn-secondary">Добавить правило</button>
+        </div>
+</div>
+
+<script type="text/javascript" src="/js/mikrotik.bundle.js?v=<%= version %>"></script>
+<%- include partials/footer.ejs %>

@@ -206,6 +206,7 @@
     "destination": "Destination",
     "disable": "Disable",
     "disabled": "Disabled",
+    "category": "Category",
     "edit": "Edit",
     "email": "Email",
     "email-address": "Email address",
@@ -252,6 +253,24 @@
     "title": "Streams",
     "udp": "UDP",
     "udp-forwarding": "UDP Forwarding"
+  },
+  "audio-streams": {
+    "title": "Audio Streams",
+    "add": "Add",
+    "import": "Import",
+    "delete": "Delete",
+    "delete-confirm": "Delete this stream?",
+    "play": "Play",
+    "save-m3u": "M3U",
+    "save-pls": "PLS",
+    "alias": "Alias",
+    "link": "Link",
+    "hide-token": "Hide token",
+    "category-news": "News",
+    "category-music": "Music",
+    "category-talk": "Talk",
+    "category-other": "Other",
+    "select-domain": "Select Domain"
   },
   "tls": {
     "certbot": "Certbot",

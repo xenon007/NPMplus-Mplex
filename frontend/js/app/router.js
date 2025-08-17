@@ -16,6 +16,7 @@ module.exports = AppRouter.default.extend({
         'settings':           'showSettings',
         'services':           'showServices',
         'multiplexor':        'showMultiplexor',
+        'audio/streams':      'showAudioStreams',
         '*default':           'showDashboard'
     }
 });
