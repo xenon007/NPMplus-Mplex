@@ -1,27 +1,37 @@
 const express = require('express');
+const os = require('os');
 const path = require('path');
 const fs = require('fs');
 const childProcess = require('child_process');
-const parser = require('../lib/multiplexor-parser');
+const { saveConfig } = require('../lib/multiplexor-config');
+const state = require('../lib/multiplexor-state');
 
 const router = express.Router();
 
-// Имя используемого мультиплексора (по умолчанию shoes)
-const MULTIPLEXOR_NAME = process.env.MULTIPLEXPOR_NAME || 'shoes';
-
-// Путь к файлу конфигурации мультиплексора
-const CONFIG_PATH = process.env.MPLEX_CONFIG_PATH ||
-    path.join(__dirname, `../../mplex/config/${MULTIPLEXOR_NAME}.yaml`);
-
 // Путь к описаниям сервисов
-const SERVICES_PATH = path.join(__dirname, `../../mplex/${MULTIPLEXOR_NAME}/services.json`);
+const SERVICES_PATH = path.join(__dirname, '../../services.json');
+
+/**
+ * Список доступных IP адресов контейнера
+ */
+router.get('/api/ips', (req, res) => {
+    const nets = os.networkInterfaces();
+    const ips = new Set(['0.0.0.0', '127.0.0.1']);
+    Object.values(nets).forEach(ifaces => {
+        ifaces.forEach(iface => {
+            if (iface.family === 'IPv4') {
+                ips.add(iface.address);
+            }
+        });
+    });
+    res.json(Array.from(ips));
+});
 
 /**
  * Получить текущую конфигурацию
  */
 router.get('/api/config', (req, res) => {
-    const cfg = parser.loadConfig(CONFIG_PATH);
-    res.json(cfg);
+    res.json(state.loadState());
 });
 
 /**
@@ -40,12 +50,12 @@ router.get('/api/services', (req, res) => {
  * Сохранить конфигурацию мультиплексора
  */
 router.post('/api/config', express.json(), (req, res) => {
-    const ok = parser.saveConfig(CONFIG_PATH, req.body);
-    if (ok) {
-        // Перезапускаем процесс мультиплексора, чтобы применить изменения
-        childProcess.exec(`pkill -HUP ${MULTIPLEXOR_NAME}`);
+    try {
+        state.saveState(req.body);
+        saveConfig(req.body.type, req.body);
+        childProcess.exec(`pkill -HUP ${req.body.type}`);
         res.json({ success: true });
-    } else {
+    } catch (err) {
         res.status(500).json({ success: false });
     }
 });

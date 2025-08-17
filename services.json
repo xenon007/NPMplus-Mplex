@@ -28,5 +28,10 @@
     "id": "sslh",
     "name": "sslh",
     "config": "/services/sslh.cfg"
+  },
+  {
+    "id": "singbox",
+    "name": "Sing-Box",
+    "config": "/services/singbox.json"
   }
 ]

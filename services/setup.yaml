@@ -1,0 +1,24 @@
+multiplexers:
+  caddy:
+    file: Caddyfile
+    format: caddy
+    listen: "<ip>:<port>"
+    rule: "@name host <match> -> reverse_proxy <forward>"
+  protoplex:
+    file: protoplex.toml
+    format: toml
+    listen_key: listen
+    rule_table: service
+  shoes:
+    file: shoes.yaml
+    format: yaml
+    address_key: address
+    rules_key: protocol.rules
+  singbox:
+    file: singbox.json
+    format: json
+    listen_fields: [listen, listen_port]
+  sslh:
+    file: sslh.cfg
+    format: cfg
+    listen_key: listen

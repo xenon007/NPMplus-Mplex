@@ -1,0 +1,12 @@
+{
+  "inbounds": [
+    {
+      "type": "mixed",
+      "listen": "0.0.0.0",
+      "listen_port": 443
+    }
+  ],
+  "routing": {
+    "rules": []
+  }
+}
