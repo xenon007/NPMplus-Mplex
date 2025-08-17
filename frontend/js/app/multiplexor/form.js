@@ -4,6 +4,15 @@ const $ = require('jquery');
 const ruleMap = [];
 let $rules;
 
+// Типы мультиплексоров
+const TYPES = [
+    { id: 'caddy', name: 'Caddy' },
+    { id: 'protoplex', name: 'Protoplex' },
+    { id: 'shoes', name: 'Shoes' },
+    { id: 'singbox', name: 'Sing-Box' },
+    { id: 'sslh', name: 'SSLH' }
+];
+
 /**
  * Добавляет строку для правила в форму
  * @param {string} [match=''] шаблон
@@ -34,14 +43,26 @@ module.exports = function initForm(rootEl) {
     const $root = $(rootEl);
     const $form = $root.find('#mplex-form');
     const $listen = $root.find('#listen');
+    const $ip = $root.find('#listen-ip');
+    const $type = $root.find('#mplex-type');
     $rules = $root.find('#rules');
     const $addRule = $root.find('#add-rule');
+
+    // Заполняем селектор типов
+    TYPES.forEach(t => $type.append(`<option value="${t.id}">${t.name}</option>`));
+
+    // Загрузка списка IP адресов
+    $.get('/multiplexor/api/ips', ips => {
+        ips.forEach(ip => $ip.append(`<option value="${ip}">${ip}</option>`));
+    });
 
     // Загрузка текущей конфигурации
     function loadConfig() {
         $.get('/multiplexor/api/config', cfg => {
             console.debug('Loaded config', cfg);
-            $listen.val(cfg.listen || '');
+            $listen.val(cfg.port || '');
+            $ip.val(cfg.ip || '0.0.0.0');
+            $type.val(cfg.type || 'caddy');
             $rules.empty();
             ruleMap.length = 0; // сбрасываем локальный массив
             if (cfg.rules && cfg.rules.length) {
@@ -57,7 +78,9 @@ module.exports = function initForm(rootEl) {
     $form.on('submit', function (e) {
         e.preventDefault();
         const config = {
-            listen: $listen.val().trim(),
+            ip: $ip.val().trim(),
+            port: $listen.val().trim(),
+            type: $type.val(),
             rules: []
         };
 
@@ -95,4 +118,3 @@ module.exports = function initForm(rootEl) {
 
     loadConfig();
 };
-
