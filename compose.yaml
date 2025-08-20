@@ -130,7 +130,9 @@ services:
 # This can be used to enable crowdsec, see README for a guide
   crowdsec:
     container_name: crowdsec
-    image: docker.io/crowdsecurity/crowdsec:latest
+    build:
+      context: .
+    image: docker.io/einherji/crowdsec:latest
     restart: always
     network_mode: bridge
     ports:
